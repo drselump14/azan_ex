@@ -13,17 +13,25 @@ defmodule CalculationParameter do
 
     field :method_adjustments, map(),
       default: %{fajr: 0, sunrise: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0}
+
+    field :adjustments, map(),
+      default: %{fajr: 0, sunrise: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0}
+
+    field :madhab, String.t(), default: "Shafi"
+
+    field :high_latitude_rule, String.t(), default: :middle_of_the_night
+    field :polar_circle_resolution, String.t(), default: :unresolved
   end
 
-  @spec night_portions(CalculationParameter.t(), String.t()) :: %{fajr: float(), isha: float()}
-  def night_portions(%CalculationParameter{}, "middle_of_the_night") do
+  @spec night_portions(CalculationParameter.t(), atom()) :: %{fajr: float(), isha: float()}
+  def night_portions(%CalculationParameter{}, :middle_of_the_night) do
     %{
       fajr: 1 / 2,
       isha: 1 / 2
     }
   end
 
-  def night_portions(%CalculationParameter{}, "sevent_of_the_night") do
+  def night_portions(%CalculationParameter{}, :sevent_of_the_night) do
     %{
       fajr: 1 / 7,
       isha: 1 / 7
@@ -32,7 +40,7 @@ defmodule CalculationParameter do
 
   def night_portions(
         %CalculationParameter{fajr_angle: fajr_angle, isha_angle: isha_angle},
-        "twilight_angle"
+        :twilight_angle
       ) do
     %{
       fajr: fajr_angle / 60,
@@ -40,8 +48,8 @@ defmodule CalculationParameter do
     }
   end
 
-  @spec adjust(%CalculationParameter{}, atom(), integer()) :: %CalculationParameter{}
-  def adjust(
+  @spec adjust_by_method(%CalculationParameter{}, atom(), integer()) :: %CalculationParameter{}
+  def adjust_by_method(
         %CalculationParameter{method_adjustments: method_adjustments} = calculation_parameter,
         prayer_time_category,
         offset
