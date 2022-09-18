@@ -3,6 +3,8 @@ defmodule Astronomical do
   Documentation for `Astronomical`.
   """
 
+  require Logger
+
   def mean_solar_longitude(julian_century) do
     term_1 = 280.4664567
     term_2 = 36_000.76983 * julian_century
@@ -100,11 +102,26 @@ defmodule Astronomical do
     l_0 = solar_longitude
     l_p = lunar_longitude
     omega = ascending_node
-    term1 = omega |> Math.deg2rad() |> Math.sin() |> Kernel.*(9.2 / 3600)
-    term2 = l_0 |> Math.deg2rad() |> Kernel.*(2) |> Math.sin() |> Kernel.*(0.57 / 3600)
-    term3 = l_p |> Math.deg2rad() |> Kernel.*(2) |> Math.sin() |> Kernel.*(0.1 / 3600)
-    term4 = omega |> Math.deg2rad() |> Kernel.*(2) |> Math.sin() |> Kernel.*(0.09 / 3600)
-    term1 - term2 - term3 + term4
+    term1 = omega |> Math.deg2rad() |> Math.cos() |> Kernel.*(9.2 / 3600)
+    term2 = l_0 |> Math.deg2rad() |> Kernel.*(2) |> Math.cos() |> Kernel.*(0.57 / 3600)
+    term3 = l_p |> Math.deg2rad() |> Kernel.*(2) |> Math.cos() |> Kernel.*(0.1 / 3600)
+    term4 = omega |> Math.deg2rad() |> Kernel.*(2) |> Math.cos() |> Kernel.*(0.09 / 3600)
+    term1 + term2 + term3 - term4
+  end
+
+  def altitude_of_celestial_body(observer_latitude, declination, local_hour_angle) do
+    phi = observer_latitude
+    delta = declination
+    h = local_hour_angle
+
+    term1 = Math.sin(Math.deg2rad(phi)) * Math.sin(Math.deg2rad(delta))
+
+    term2 =
+      Math.cos(Math.deg2rad(phi)) *
+        Math.cos(Math.deg2rad(delta)) *
+        Math.cos(Math.deg2rad(h))
+
+    Math.rad2deg(Math.asin(term1 + term2))
   end
 
   def julian_century(julian_day) do

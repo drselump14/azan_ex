@@ -31,8 +31,57 @@ defmodule AstronomicalTest do
     assert_to_be_close_to(alpha, 198.38083, 4)
   end
 
+  test "calculate solar coordinate value 2" do
+    jd = Astronomical.julian_day(1987, 4, 10)
+
+    %SolarCoordinates{declination: delta, apparent_side_real_time: theta_app} =
+      jd |> SolarCoordinates.init_by_julian_day()
+
+    t = jd |> Astronomical.julian_century()
+
+    theta_0 = t |> Astronomical.mean_sidereal_time()
+    omega = t |> Astronomical.ascending_lunar_node_longitude()
+    e_0 = t |> Astronomical.mean_obliquity_of_the_ecliptic()
+    l_0 = t |> Astronomical.mean_solar_longitude()
+    l_p = t |> Astro.Lunar.mean_lunar_longitude()
+    dpsi = l_0 |> Astronomical.nutation_in_longitude(l_p, omega)
+    d_epsilon = l_0 |> Astronomical.nutation_in_obliquity(l_p, omega)
+    e = e_0 + d_epsilon
+
+    assert_to_be_close_to(theta_0, 197.693195, 5)
+    assert_to_be_close_to(theta_app, 197.6922295833, 2)
+
+    assert_to_be_close_to(omega, 11.2531, 3)
+    assert_to_be_close_to(dpsi, -0.0010522, 3)
+    assert_to_be_close_to(d_epsilon, 0.0026230556, 4)
+    assert_to_be_close_to(e_0, 23.4409463889, 5)
+    assert_to_be_close_to(e, 23.4435694444, 4)
+  end
+
+  test "calculate the altitude of celestial body" do
+    phi = 38 + 55 / 60 + 17.0 / 3600
+    delta = -6 - 43 / 60 - 11.61 / 3600
+    h = 64.352133
+    altitude = phi |> Astronomical.altitude_of_celestial_body(delta, h)
+
+    assert_to_be_close_to(altitude, 15.1249, 3)
+  end
+
   test "julian_day" do
     assert Astronomical.julian_day(2022, 9, 18) == 2_459_840.5
+
+    assert Astronomical.julian_day(2010, 1, 2) == 2_455_198.5
+    assert Astronomical.julian_day(2011, 2, 4) == 2_455_596.5
+    assert Astronomical.julian_day(2012, 3, 6) == 2_455_992.5
+    assert Astronomical.julian_day(2013, 4, 8) == 2_456_390.5
+    assert Astronomical.julian_day(2014, 5, 10) == 2_456_787.5
+    assert Astronomical.julian_day(2015, 6, 12) == 2_457_185.5
+    assert Astronomical.julian_day(2016, 7, 14) == 2_457_583.5
+    assert Astronomical.julian_day(2017, 8, 16) == 2_457_981.5
+    assert Astronomical.julian_day(2018, 9, 18) == 2_458_379.5
+    assert Astronomical.julian_day(2019, 10, 20) == 2_458_776.5
+    assert Astronomical.julian_day(2020, 11, 22) == 2_459_175.5
+    assert Astronomical.julian_day(2021, 12, 24) == 2_459_572.5
   end
 
   test "is_leap_year" do
