@@ -17,6 +17,10 @@ defmodule Azan.TestCase do
     assert to_be_close_to(a, b, digit_precision)
   end
 
+  def assert_time_string(%TimeComponent{} = time_component, time_string) do
+    assert time_string == time_component |> TimeComponent.to_hm_string()
+  end
+
   def to_be_close_to(a, b, digit_precision) do
     a
     |> round_decimal_by_digit(digit_precision)

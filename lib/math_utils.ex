@@ -18,4 +18,12 @@ defmodule MathUtils do
   def quadrant_shift_angle(angle) do
     angle - 360 * Float.round(angle / 360)
   end
+
+  def sin_deg(deg) do
+    deg |> Math.deg2rad() |> Math.sin()
+  end
+
+  def cos_deg(deg) do
+    deg |> Math.deg2rad() |> Math.cos()
+  end
 end

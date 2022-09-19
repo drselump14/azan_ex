@@ -114,8 +114,8 @@ defmodule Astronomical do
     delta = declination
     h = local_hour_angle
 
-    term1 = sin_deg(phi) * sin_deg(delta)
-    term2 = cos_deg(phi) * cos_deg(delta) * cos_deg(h)
+    term1 = MathUtils.sin_deg(phi) * MathUtils.sin_deg(delta)
+    term2 = MathUtils.cos_deg(phi) * MathUtils.cos_deg(delta) * MathUtils.cos_deg(h)
 
     (term1 + term2) |> Math.asin() |> Math.rad2deg()
   end
@@ -174,10 +174,10 @@ defmodule Astronomical do
     d3 = next_declination
 
     lw = -1 * longitude
-    term1 = sin_deg(h0) - sin_deg(latitude) * sin_deg(d2)
-    term2 = cos_deg(latitude) * cos_deg(d2)
+    term1 = MathUtils.sin_deg(h0) - MathUtils.sin_deg(latitude) * MathUtils.sin_deg(d2)
+    term2 = MathUtils.cos_deg(latitude) * MathUtils.cos_deg(d2)
 
-    h0_capital = (term1 / term2) |> Math.acos() |> Math.rad2deg()
+    h0_capital = (term1 / term2) |> :math.acos() |> Math.rad2deg()
 
     m = if after_transit, do: m0 + h0_capital / 360, else: m0 - h0_capital / 360
     theta = (theta0 + 360.985647 * m) |> MathUtils.unwind_angle()
@@ -194,9 +194,9 @@ defmodule Astronomical do
       )
 
     term3 = h - h0
-    Logger.debug("term3: #{term3}")
-    term4 = 360 * cos_deg(delta) * cos_deg(latitude) * sin_deg(h_capital)
-    Logger.debug("term4: #{term4}")
+
+    term4 =
+      360 * MathUtils.cos_deg(delta) * MathUtils.cos_deg(latitude) * MathUtils.sin_deg(h_capital)
 
     dm = term3 / term4
     (m + dm) * 24
@@ -241,12 +241,4 @@ defmodule Astronomical do
   def is_leap_year(year) when rem(year, 4) !== 0, do: false
   def is_leap_year(year) when rem(year, 100) == 0 and rem(year, 400) !== 0, do: false
   def is_leap_year(_year), do: true
-
-  defp sin_deg(deg) do
-    deg |> Math.deg2rad() |> Math.sin()
-  end
-
-  defp cos_deg(deg) do
-    deg |> Math.deg2rad() |> Math.cos()
-  end
 end

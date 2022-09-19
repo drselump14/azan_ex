@@ -5,6 +5,8 @@ defmodule AstronomicalTest do
 
   use Azan.TestCase
 
+  require Logger
+
   test "calculate solar coordinate values" do
     jd = Astronomical.julian_day(1992, 10, 13)
 
@@ -104,6 +106,22 @@ defmodule AstronomicalTest do
     assert_to_be_close_to(rise, 0.51766, 4)
   end
 
+  test "calculate solar time values" do
+    coordinates = %Coordinates{latitude: 35 + 47 / 60, longitude: -78 - 39 / 60}
+
+    solar =
+      %SolarTime{transit: transit, sunrise: sunrise, sunset: sunset} =
+      SolarTime.new(Date.new!(2015, 6, 12), coordinates)
+
+    twilight_start = solar |> SolarTime.hour_angle(-6, false)
+    twilight_end = solar |> SolarTime.hour_angle(-6, true)
+    assert_time_string(twilight_start |> TimeComponent.new(), "9:38")
+    assert_time_string(sunrise |> TimeComponent.new(), "10:08")
+    assert_time_string(transit |> TimeComponent.new(), "17:20")
+    assert_time_string(sunset |> TimeComponent.new(), "24:32")
+    assert_time_string(twilight_end |> TimeComponent.new(), "25:02")
+  end
+
   test "julian_day" do
     assert Astronomical.julian_day(2022, 9, 18) == 2_459_840.5
 
@@ -129,5 +147,9 @@ defmodule AstronomicalTest do
 
   test "julian_century" do
     assert Astronomical.julian_century(2_451_545) == 0.0
+  end
+
+  def time_string(time) do
+    time |> Timex.format!("{h24}:{m}")
   end
 end
