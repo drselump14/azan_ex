@@ -114,14 +114,106 @@ defmodule Astronomical do
     delta = declination
     h = local_hour_angle
 
-    term1 = Math.sin(Math.deg2rad(phi)) * Math.sin(Math.deg2rad(delta))
+    term1 = sin_deg(phi) * sin_deg(delta)
+    term2 = cos_deg(phi) * cos_deg(delta) * cos_deg(h)
 
-    term2 =
-      Math.cos(Math.deg2rad(phi)) *
-        Math.cos(Math.deg2rad(delta)) *
-        Math.cos(Math.deg2rad(h))
+    (term1 + term2) |> Math.asin() |> Math.rad2deg()
+  end
 
-    Math.rad2deg(Math.asin(term1 + term2))
+  def approximate_transit(longitude, sidereal_time, right_ascension) do
+    l = longitude
+    theta0 = sidereal_time
+    a2 = right_ascension
+    l_w = l * -1
+    (a2 + l_w - theta0) |> Kernel./(360) |> MathUtils.normalize_to_scale(1)
+  end
+
+  def corrected_transit(
+        approximate_transit,
+        longitude,
+        sidereal_time,
+        right_ascension,
+        previous_right_ascension,
+        next_right_ascension
+      ) do
+    m0 = approximate_transit
+    l = longitude
+    theta0 = sidereal_time
+    a2 = right_ascension
+    a1 = previous_right_ascension
+    a3 = next_right_ascension
+    l_w = l * -1
+    theta = (theta0 + 360.985647 * m0) |> MathUtils.unwind_angle()
+    a = Astronomical.interpolate_angles(a2, a1, a3, m0) |> MathUtils.unwind_angle()
+    h = (theta - l_w - a) |> MathUtils.quadrant_shift_angle()
+    dm = h / -360
+    (m0 + dm) * 24
+  end
+
+  def corrected_hour_angle(
+        approximate_transit,
+        angle,
+        %Coordinates{latitude: latitude, longitude: longitude},
+        after_transit,
+        sidereal_time,
+        right_ascension,
+        previous_right_ascension,
+        next_right_ascension,
+        declination,
+        previous_declination,
+        next_declination
+      ) do
+    m0 = approximate_transit
+    h0 = angle
+    theta0 = sidereal_time
+    a2 = right_ascension
+    a1 = previous_right_ascension
+    a3 = next_right_ascension
+    d2 = declination
+    d1 = previous_declination
+    d3 = next_declination
+
+    lw = -1 * longitude
+    term1 = sin_deg(h0) - sin_deg(latitude) * sin_deg(d2)
+    term2 = cos_deg(latitude) * cos_deg(d2)
+
+    h0_capital = (term1 / term2) |> Math.acos() |> Math.rad2deg()
+
+    m = if after_transit, do: m0 + h0_capital / 360, else: m0 - h0_capital / 360
+    theta = (theta0 + 360.985647 * m) |> MathUtils.unwind_angle()
+    a = Astronomical.interpolate_angles(a2, a1, a3, m) |> MathUtils.unwind_angle()
+
+    delta = Astronomical.interpolate(d2, d1, d3, m)
+    h_capital = theta - lw - a
+
+    h =
+      Astronomical.altitude_of_celestial_body(
+        latitude,
+        delta,
+        h_capital
+      )
+
+    term3 = h - h0
+    Logger.debug("term3: #{term3}")
+    term4 = 360 * cos_deg(delta) * cos_deg(latitude) * sin_deg(h_capital)
+    Logger.debug("term4: #{term4}")
+
+    dm = term3 / term4
+    (m + dm) * 24
+  end
+
+  def interpolate(y2, y1, y3, n) do
+    a = y2 - y1
+    b = y3 - y2
+    c = b - a
+    y2 + n * (a + b + c * n) / 2
+  end
+
+  def interpolate_angles(y2, y1, y3, n) do
+    a = (y2 - y1) |> MathUtils.unwind_angle()
+    b = (y3 - y2) |> MathUtils.unwind_angle()
+    c = b - a
+    y2 + n / 2 * (a + b + n * c)
   end
 
   def julian_century(julian_day) do
@@ -149,4 +241,12 @@ defmodule Astronomical do
   def is_leap_year(year) when rem(year, 4) !== 0, do: false
   def is_leap_year(year) when rem(year, 100) == 0 and rem(year, 400) !== 0, do: false
   def is_leap_year(_year), do: true
+
+  defp sin_deg(deg) do
+    deg |> Math.deg2rad() |> Math.sin()
+  end
+
+  defp cos_deg(deg) do
+    deg |> Math.deg2rad() |> Math.cos()
+  end
 end
