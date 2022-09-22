@@ -3,7 +3,7 @@ defmodule Shafaq do
   Documentation for `Shafaq`.
   """
 
-  def general(), do: "general"
-  def ahmer(), do: "ahmer"
-  def abyad(), do: "abyad"
+  def general, do: "general"
+  def ahmer, do: "ahmer"
+  def abyad, do: "abyad"
 end

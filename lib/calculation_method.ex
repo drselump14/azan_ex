@@ -3,7 +3,7 @@ defmodule CalculationMethod do
   Documentation for `CalculationMethod`.
   """
 
-  def muslim_world_league() do
+  def muslim_world_league do
     %CalculationParameter{
       method: "Muslim World League",
       fajr_angle: 18,
@@ -12,7 +12,7 @@ defmodule CalculationMethod do
     |> CalculationParameter.adjust_by_method(:dhuhr, 1)
   end
 
-  def egyptian() do
+  def egyptian do
     %CalculationParameter{
       method: "Egyptian General Authority of Survey",
       fajr_angle: 19.5,
@@ -21,7 +21,7 @@ defmodule CalculationMethod do
     |> CalculationParameter.adjust_by_method(:dhuhr, 1)
   end
 
-  def karachi() do
+  def karachi do
     %CalculationParameter{
       method: "University of Islamic Sciences, Karachi",
       fajr_angle: 18,
@@ -30,7 +30,7 @@ defmodule CalculationMethod do
     |> CalculationParameter.adjust_by_method(:dhuhr, 1)
   end
 
-  def umm_al_quran() do
+  def umm_al_quran do
     %CalculationParameter{
       method: "Umm al-Qura University, Makkah",
       fajr_angle: 18.5,
@@ -39,7 +39,7 @@ defmodule CalculationMethod do
     }
   end
 
-  def dubai() do
+  def dubai do
     %CalculationParameter{
       method: "The General Authority of Islamic Affairs and Endowments, Dubai",
       fajr_angle: 18.2,
@@ -51,7 +51,7 @@ defmodule CalculationMethod do
     |> CalculationParameter.adjust_by_method(:maghrib, 3)
   end
 
-  def moonsighting_committee() do
+  def moonsighting_committee do
     params = %CalculationParameter{
       method: "Moonsighting Committee",
       fajr_angle: 18,
@@ -63,7 +63,7 @@ defmodule CalculationMethod do
     |> CalculationParameter.adjust_by_method(:maghrib, 3)
   end
 
-  def north_america() do
+  def north_america do
     %CalculationParameter{
       method: "Islamic Society of North America",
       fajr_angle: 15,
@@ -72,7 +72,7 @@ defmodule CalculationMethod do
     |> CalculationParameter.adjust_by_method(:dhuhr, 1)
   end
 
-  def kuwait() do
+  def kuwait do
     %CalculationParameter{
       method: "Ministry of Awqaf and Islamic Affairs, Kuwait",
       fajr_angle: 18,
@@ -80,7 +80,7 @@ defmodule CalculationMethod do
     }
   end
 
-  def qatar() do
+  def qatar do
     %CalculationParameter{
       method: "Qatar",
       fajr_angle: 18,
@@ -89,7 +89,7 @@ defmodule CalculationMethod do
     }
   end
 
-  def singapore() do
+  def singapore do
     %CalculationParameter{
       method: "Islamic Religious Council of Singapore",
       fajr_angle: 20,
@@ -97,7 +97,7 @@ defmodule CalculationMethod do
     }
   end
 
-  def tehran() do
+  def tehran do
     %CalculationParameter{
       method: "Institute of Geophysics, University of Tehran",
       fajr_angle: 17.7,

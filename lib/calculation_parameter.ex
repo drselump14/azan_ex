@@ -23,7 +23,6 @@ defmodule CalculationParameter do
     field :polar_circle_resolution, String.t(), default: :unresolved
   end
 
-  @spec night_portions(CalculationParameter.t(), atom()) :: %{fajr: float(), isha: float()}
   def night_portions(%CalculationParameter{}, :middle_of_the_night) do
     %{
       fajr: 1 / 2,
@@ -48,7 +47,6 @@ defmodule CalculationParameter do
     }
   end
 
-  @spec adjust_by_method(%CalculationParameter{}, atom(), integer()) :: %CalculationParameter{}
   def adjust_by_method(
         %CalculationParameter{method_adjustments: method_adjustments} = calculation_parameter,
         prayer_time_category,

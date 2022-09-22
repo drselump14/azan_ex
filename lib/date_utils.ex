@@ -3,7 +3,7 @@ defmodule DateUtils do
   A collection of date utilities.
   """
 
-  def day_of_year(date = %Date{}) do
+  def day_of_year(%Date{} = date) do
     date
     |> Timex.diff(date |> Timex.beginning_of_year(), :days)
     |> Kernel.+(1)

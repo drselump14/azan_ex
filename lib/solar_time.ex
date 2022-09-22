@@ -29,8 +29,7 @@ defmodule SolarTime do
     solar =
       %SolarCoordinates{
         apparent_side_real_time: apparent_side_real_time,
-        right_ascension: right_ascension,
-        declination: declination
+        right_ascension: right_ascension
       } = SolarCoordinates.init_by_julian_day(julian_day)
 
     prev_solar = SolarCoordinates.init_by_julian_day(julian_day - 1)
@@ -56,32 +55,26 @@ defmodule SolarTime do
           next_solar.right_ascension
         ),
       sunrise:
-        Astronomical.corrected_hour_angle(
+        AstronomyUtility.corrected_hour_angle(
           m0,
           solar_altitude,
           coordinates,
           false,
           apparent_side_real_time,
-          right_ascension,
-          prev_solar.right_ascension,
-          next_solar.right_ascension,
-          declination,
-          prev_solar.declination,
-          next_solar.declination
+          solar,
+          prev_solar,
+          next_solar
         ),
       sunset:
-        Astronomical.corrected_hour_angle(
+        AstronomyUtility.corrected_hour_angle(
           m0,
           solar_altitude,
           coordinates,
           true,
           apparent_side_real_time,
-          right_ascension,
-          prev_solar.right_ascension,
-          next_solar.right_ascension,
-          declination,
-          prev_solar.declination,
-          next_solar.declination
+          solar,
+          prev_solar,
+          next_solar
         )
     }
   end
@@ -90,29 +83,25 @@ defmodule SolarTime do
         %__MODULE__{
           approx_transit: approx_transit,
           observer: observer,
-          solar: %SolarCoordinates{
-            apparent_side_real_time: apparent_side_real_time,
-            right_ascension: right_ascension,
-            declination: declination
-          },
+          solar:
+            %SolarCoordinates{
+              apparent_side_real_time: apparent_side_real_time
+            } = solar,
           prev_solar: prev_solar,
           next_solar: next_solar
         },
         angle,
         after_transit
       ) do
-    Astronomical.corrected_hour_angle(
+    AstronomyUtility.corrected_hour_angle(
       approx_transit,
       angle,
       observer,
       after_transit,
       apparent_side_real_time,
-      right_ascension,
-      prev_solar.right_ascension,
-      next_solar.right_ascension,
-      declination,
-      prev_solar.declination,
-      next_solar.declination
+      solar,
+      prev_solar,
+      next_solar
     )
   end
 
