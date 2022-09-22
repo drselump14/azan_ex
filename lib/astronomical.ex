@@ -5,6 +5,8 @@ defmodule Astronomical do
 
   require Logger
 
+  @northern_offset 10
+
   def mean_solar_longitude(julian_century) do
     term_1 = 280.4664567
     term_2 = 36_000.76983 * julian_century
@@ -79,7 +81,7 @@ defmodule Astronomical do
 
   def mean_sidereal_time(julian_century) do
     t = julian_century
-    jd = t * 36525 + 2_451_545.0
+    jd = t * 36_525 + 2_451_545.0
     term1 = 280.46061837
     term2 = 360.98564736629 * (jd - 2_451_545)
     term3 = 0.000387933 * Math.pow(t, 2)
@@ -216,6 +218,101 @@ defmodule Astronomical do
     y2 + n / 2 * (a + b + n * c)
   end
 
+  @spec southern_offset(pos_integer()) :: pos_integer()
+  def southern_offset(year) do
+    if year |> Timex.is_leap?(), do: 173, else: 172
+  end
+
+  @spec days_since_solstice(integer(), integer(), float()) :: pos_integer()
+  def days_since_solstice(day_of_year, year, latitude) when latitude >= 0 do
+    days_since_solstice = day_of_year + @northern_offset
+    days_in_year = year |> DateUtils.days_in_year()
+
+    case days_since_solstice >= days_in_year do
+      true -> days_since_solstice - days_in_year
+      false -> days_since_solstice
+    end
+  end
+
+  def days_since_solstice(day_of_year, year, latitude) when latitude < 0 do
+    southern_offset = year |> Astronomical.southern_offset()
+    days_since_solstice = day_of_year - southern_offset
+    days_in_year = year |> DateUtils.days_in_year()
+
+    case days_since_solstice < 0 do
+      true -> days_since_solstice + days_in_year
+      false -> days_since_solstice
+    end
+  end
+
+  def season_adjusted_morning_twilight(latitude, day_of_year, year, sunrise = %DateTime{}) do
+    a = 75 + 28.65 / 55.0 * abs(latitude)
+    b = 75 + 19.44 / 55.0 * abs(latitude)
+    c = 75 + 32.74 / 55.0 * abs(latitude)
+    d = 75 + 48.1 / 55.0 * abs(latitude)
+
+    adjustment =
+      case day_of_year |> Astronomical.days_since_solstice(year, latitude) do
+        dyy when dyy < 91 -> a + (b - a) / 91.0 * dyy
+        dyy when dyy < 137 -> b + (c - b) / 46.0 * (dyy - 91)
+        dyy when dyy < 183 -> c + (d - c) / 46.0 * (dyy - 137)
+        dyy when dyy < 229 -> d + (c - d) / 46.0 * (dyy - 183)
+        dyy when dyy < 275 -> c + (b - c) / 46.0 * (dyy - 229)
+        dyy -> b + (a - b) / 91.0 * (dyy - 275)
+      end
+
+    sunrise |> Timex.shift(seconds: adjustment |> Kernel.*(-60) |> round())
+  end
+
+  def season_adjusted_evening_twilight(latitude, day_of_year, year, sunset, shafaq) do
+    %{a: a, b: b, c: c, d: d} = latitude |> abcd_seasoned_adjusted_evening_twilight(shafaq)
+
+    adjustment =
+      case day_of_year |> Astronomical.days_since_solstice(year, latitude) do
+        dyy when dyy < 91 -> a + (b - a) / 91.0 * dyy
+        dyy when dyy < 137 -> b + (c - b) / 46.0 * (dyy - 91)
+        dyy when dyy < 183 -> c + (d - c) / 46.0 * (dyy - 137)
+        dyy when dyy < 229 -> d + (c - d) / 46.0 * (dyy - 183)
+        dyy when dyy < 275 -> c + (b - c) / 46.0 * (dyy - 229)
+        dyy -> b + (a - b) / 91.0 * (dyy - 275)
+      end
+
+    sunset |> Timex.shift(seconds: adjustment |> Kernel.*(-60) |> round())
+  end
+
+  defp abcd_seasoned_adjusted_evening_twilight(latitude, "ahmer") do
+    abs_latitude = latitude |> abs()
+
+    %{
+      a: 62 + 17.4 / 55.0 * abs_latitude,
+      b: 62 - 7.16 / 55.0 * abs_latitude,
+      c: 62 + 5.12 / 55.0 * abs_latitude,
+      d: 62 + 19.44 / 55.0 * abs_latitude
+    }
+  end
+
+  defp abcd_seasoned_adjusted_evening_twilight(latitude, "abyad") do
+    abs_latitude = latitude |> abs()
+
+    %{
+      a: 75 + 25.6 / 55.0 * abs_latitude,
+      b: 75 + 7.16 / 55.0 * abs_latitude,
+      c: 75 + 36.84 / 55.0 * abs_latitude,
+      d: 75 + 81.84 / 55.0 * abs_latitude
+    }
+  end
+
+  defp abcd_seasoned_adjusted_evening_twilight(latitude, _) do
+    abs_latitude = latitude |> abs()
+
+    %{
+      a: 75 + 25.6 / 55.0 * abs_latitude,
+      b: 75 + 7.16 / 55.0 * abs_latitude,
+      c: 75 + 36.84 / 55.0 * abs_latitude,
+      d: 75 + 81.84 / 55.0 * abs_latitude
+    }
+  end
+
   def julian_century(julian_day) do
     (julian_day - 2_451_545.0) / 36_525
   end
@@ -237,8 +334,4 @@ defmodule Astronomical do
   def julian_day(year, month, day) do
     julian_day(year, month, day, 0)
   end
-
-  def is_leap_year(year) when rem(year, 4) !== 0, do: false
-  def is_leap_year(year) when rem(year, 100) == 0 and rem(year, 400) !== 0, do: false
-  def is_leap_year(_year), do: true
 end

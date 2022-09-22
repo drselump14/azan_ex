@@ -106,6 +106,56 @@ defmodule AstronomicalTest do
     assert_to_be_close_to(rise, 0.51766, 4)
   end
 
+  test "calculate solar time values" do
+    coordinates = %Coordinates{latitude: 35 + 47 / 60, longitude: -78 - 39 / 60}
+
+    solar =
+      %SolarTime{transit: transit, sunrise: sunrise, sunset: sunset} =
+      SolarTime.new(Date.new!(2015, 6, 12), coordinates)
+
+    twilight_start = solar |> SolarTime.hour_angle(-6, false)
+    twilight_end = solar |> SolarTime.hour_angle(-6, true)
+
+    assert assert_time_string(TimeComponent.new(twilight_start), "9:38")
+    assert assert_time_string(TimeComponent.new(sunrise), "10:08")
+    assert assert_time_string(TimeComponent.new(transit), "17:20")
+    assert assert_time_string(TimeComponent.new(sunset), "24:32")
+    assert assert_time_string(TimeComponent.new(twilight_end), "25:02")
+  end
+
+  test "verify the correct calendar date is being used for calculations" do
+    coordinates = %Coordinates{latitude: 20 + 7 / 60, longitude: -155 - 34 / 60}
+    day1solar = SolarTime.new(Date.new!(2015, 3, 2), coordinates)
+    day2solar = SolarTime.new(Date.new!(2015, 3, 3), coordinates)
+
+    day1 = day1solar.sunrise
+    day2 = day2solar.sunrise
+
+    assert assert_time_string(TimeComponent.new(day1), "16:15")
+    assert assert_time_string(TimeComponent.new(day2), "16:14")
+  end
+
+  test "interpolate a value given previous and next values along with an interpolation factor" do
+    interpolated_value =
+      Astronomical.interpolate(
+        0.877366,
+        0.884226,
+        0.870531,
+        4.35 / 24
+      )
+
+    assert_to_be_close_to(interpolated_value, 0.876125, 5)
+
+    i1 = Astronomical.interpolate(1, -1, 3, 0.6)
+    assert_to_be_close_to(i1, 2.2, 5)
+
+    i2 = Astronomical.interpolate_angles(1, -1, 3, 0.6)
+    assert_to_be_close_to(i2, 2.2, 5)
+
+    i3 = Astronomical.interpolate_angles(1, 359, 3, 0.6)
+    assert_to_be_close_to(i3, 2.2, 5)
+  end
+
   test "julian_day" do
     assert Astronomical.julian_day(2022, 9, 18) == 2_459_840.5
 
@@ -123,17 +173,19 @@ defmodule AstronomicalTest do
     assert Astronomical.julian_day(2021, 12, 24) == 2_459_572.5
   end
 
-  test "is_leap_year" do
-    assert Astronomical.is_leap_year(2016) == true
-    assert Astronomical.is_leap_year(2000) == true
-    assert Astronomical.is_leap_year(1300) == false
+  test "calculate the days since the winter of summer solstice" do
+    assert DateUtils.day_of_year(2016, 1, 1) |> Astronomical.days_since_solstice(2016, 1) == 11
+    assert DateUtils.day_of_year(2015, 12, 31) |> Astronomical.days_since_solstice(2015, 1) == 10
+    assert DateUtils.day_of_year(2016, 12, 31) |> Astronomical.days_since_solstice(2016, 1) == 10
+    assert DateUtils.day_of_year(2016, 12, 21) |> Astronomical.days_since_solstice(2016, 1) == 0
+    assert DateUtils.day_of_year(2016, 12, 22) |> Astronomical.days_since_solstice(2016, 1) == 1
+    assert DateUtils.day_of_year(2016, 3, 1) |> Astronomical.days_since_solstice(2016, 1) == 71
+    assert DateUtils.day_of_year(2015, 3, 1) |> Astronomical.days_since_solstice(2015, 1) == 70
+    assert DateUtils.day_of_year(2016, 12, 20) |> Astronomical.days_since_solstice(2016, 1) == 365
+    assert DateUtils.day_of_year(2015, 12, 20) |> Astronomical.days_since_solstice(2015, 1) == 364
   end
 
   test "julian_century" do
     assert Astronomical.julian_century(2_451_545) == 0.0
-  end
-
-  def time_string(time) do
-    time |> Timex.format!("{h24}:{m}")
   end
 end
