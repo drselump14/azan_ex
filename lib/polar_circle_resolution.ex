@@ -22,9 +22,16 @@ defmodule PolarCircleResolution do
 
   def aqrab_yaum_resolver(
         %Coordinate{} = coordinate,
+        %Date{} = date
+      ) do
+    aqrab_yaum_resolver(coordinate, date, 1, 1)
+  end
+
+  def aqrab_yaum_resolver(
+        %Coordinate{} = coordinate,
         %Date{} = date,
-        days_added \\ 1,
-        direction \\ 1
+        days_added,
+        direction
       ) do
     epoch_date = date |> Timex.shift(days: days_added * direction)
     tomorrow = epoch_date |> Timex.shift(days: 1)

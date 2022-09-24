@@ -265,7 +265,7 @@ defmodule Astronomical do
     (julian_day - 2_451_545.0) / 36_525
   end
 
-  def julian_day(year, month, day, hours) do
+  def julian_day(year, month, day, hours \\ 0) do
     y = if(month > 2, do: year, else: year - 1) |> trunc()
     m = if(month > 2, do: month, else: month + 12) |> trunc()
     d = day + hours / 24
@@ -277,9 +277,5 @@ defmodule Astronomical do
     i1 = trunc(30.6001 * (m + 1))
 
     i0 + i1 + d + b - 1524.5
-  end
-
-  def julian_day(year, month, day) do
-    julian_day(year, month, day, 0)
   end
 end
