@@ -5,8 +5,6 @@ defmodule SolarTimeTest do
 
   use Azan.TestCase
 
-  require Logger
-
   test "calculate solar time values" do
     coordinate = %Coordinate{latitude: 35 + 47 / 60, longitude: -78 - 39 / 60}
 

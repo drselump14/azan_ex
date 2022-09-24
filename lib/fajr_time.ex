@@ -28,7 +28,7 @@ defmodule FajrTime do
       |> naive_fajr_time(fajr_angle, date)
       |> consider_latitude_and_method(night, method, latitude)
 
-    safe_fajr =
+    safe_fajr_time =
       %SafeFajr{
         calculation_parameter: calculation_parameter,
         sunrise_time: sunrise_time,
@@ -38,7 +38,7 @@ defmodule FajrTime do
       }
       |> SafeFajr.find_time()
 
-    naive_fajr_time |> naive_or_safe_fajr(safe_fajr)
+    naive_fajr_time |> naive_or_safe_fajr(safe_fajr_time)
   end
 
   def naive_fajr_time(%SolarTime{} = solar_time, fajr_angle, date) do
@@ -59,8 +59,10 @@ defmodule FajrTime do
 
   def naive_or_safe_fajr({:error, :invalid_date}, safe_fajr_time), do: safe_fajr_time
 
-  def naive_or_safe_fajr(naive_fajr_time, safe_fajr_time) when safe_fajr_time > naive_fajr_time,
-    do: safe_fajr_time
-
-  def naive_or_safe_fajr(naive_fajr_time, _), do: naive_fajr_time
+  def naive_or_safe_fajr(naive_fajr_time, safe_fajr_time) do
+    case DateTime.compare(safe_fajr_time, naive_fajr_time) do
+      :gt -> safe_fajr_time
+      _ -> naive_fajr_time
+    end
+  end
 end

@@ -3,7 +3,6 @@ defmodule PrayerTime do
   Documentation for `PrayerTime`.
   """
 
-  require Logger
   use TypedStruct
 
   typedstruct do
@@ -132,7 +131,7 @@ defmodule PrayerTime do
   end
 
   def calculate_night(tomorrow_sunrise, sunset_time) do
-    (Timex.to_unix(tomorrow_sunrise) - Timex.to_unix(sunset_time)) / 1000
+    Timex.to_unix(tomorrow_sunrise) - Timex.to_unix(sunset_time)
   end
 
   def sum_adjustment(nil, nil), do: 0

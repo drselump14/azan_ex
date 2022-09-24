@@ -5,8 +5,6 @@ defmodule SolarTime do
 
   use TypedStruct
 
-  require Logger
-
   typedstruct do
     field :date, %Date{}
     field :coordinate, %Coordinate{}

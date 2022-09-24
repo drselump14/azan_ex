@@ -3,8 +3,6 @@ defmodule Qibla do
   Documentation for `Qibla`.
   """
 
-  require Logger
-
   def find(%Coordinate{latitude: latitude, longitude: longitude}) do
     makkah = %Coordinate{latitude: 21.4225, longitude: 39.8261}
 

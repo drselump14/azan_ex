@@ -5,8 +5,6 @@ defmodule AstronomicalTest do
 
   use Azan.TestCase
 
-  require Logger
-
   test "calculate solar coordinate values" do
     jd = Astronomical.julian_day(1992, 10, 13)
 

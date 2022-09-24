@@ -2,9 +2,6 @@ defmodule Astronomical do
   @moduledoc """
   Documentation for `Astronomical`.
   """
-
-  require Logger
-
   @northern_offset 10
 
   def mean_solar_longitude(julian_century) do

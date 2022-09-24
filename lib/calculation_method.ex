@@ -47,7 +47,7 @@ defmodule CalculationMethod do
     }
     |> CalculationParameter.adjust_by_method(:sunrise, -3)
     |> CalculationParameter.adjust_by_method(:dhuhr, 3)
-    |> CalculationParameter.adjust_by_method(:ashar, -3)
+    |> CalculationParameter.adjust_by_method(:asr, -3)
     |> CalculationParameter.adjust_by_method(:maghrib, 3)
   end
 
@@ -105,6 +105,26 @@ defmodule CalculationMethod do
       fajr_angle: 17.7,
       isha_angle: 14,
       isha_interval: 4
+    }
+  end
+
+  def turkey do
+    %CalculationParameter{
+      method: :turkey,
+      fajr_angle: 18,
+      isha_angle: 17
+    }
+    |> CalculationParameter.adjust_by_method(:sunrise, -7)
+    |> CalculationParameter.adjust_by_method(:dhuhr, 5)
+    |> CalculationParameter.adjust_by_method(:asr, 4)
+    |> CalculationParameter.adjust_by_method(:maghrib, 7)
+  end
+
+  def other do
+    %CalculationParameter{
+      method: :other,
+      fajr_angle: 0,
+      isha_angle: 0
     }
   end
 end

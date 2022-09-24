@@ -70,8 +70,13 @@ defmodule IshaTime do
 
   def naive_or_safe_isha({:error, :invalid_date}, safe_isha), do: safe_isha
 
-  def naive_or_safe_isha(naive_isha_time, safe_isha_time) when safe_isha_time < naive_isha_time,
-    do: safe_isha_time
+  def naive_or_safe_isha(naive_isha_time, safe_isha_time) do
+    case DateTime.compare(safe_isha_time, naive_isha_time) do
+      :lt ->
+        safe_isha_time
 
-  def naive_or_safe_isha(naive_isha_time, _), do: naive_isha_time
+      _ ->
+        naive_isha_time
+    end
+  end
 end
