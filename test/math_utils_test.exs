@@ -45,4 +45,24 @@ defmodule MathUtilsTest do
       assert MathUtils.quadrant_shift_angle(1261.0) == -179
     end
   end
+
+  test "rounding a date to the closest minute" do
+    assert %DateTime{second: second, minute: minute} =
+             Timex.to_datetime({{2015, 1, 1}, {10, 2, 29}}) |> DateUtils.rounded_minute()
+
+    assert minute == 2
+    assert second == 0
+
+    assert %DateTime{second: second, minute: minute} =
+             Timex.to_datetime({{2015, 1, 1}, {10, 2, 31}}) |> DateUtils.rounded_minute()
+
+    assert minute == 3
+    assert second == 0
+
+    assert %DateTime{second: second, minute: minute} =
+             Timex.to_datetime({{2015, 1, 1}, {10, 2, 29}}) |> DateUtils.rounded_minute(:up)
+
+    assert minute == 3
+    assert second == 0
+  end
 end

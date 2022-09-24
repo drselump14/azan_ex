@@ -17,30 +17,34 @@ defmodule CalculationParameter do
     field :adjustments, map(),
       default: %{fajr: 0, sunrise: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0}
 
-    field :madhab, String.t(), default: "Shafi"
+    field :madhab, atom(), default: :shafi
 
-    field :high_latitude_rule, String.t(), default: :middle_of_the_night
-    field :polar_circle_resolution, String.t(), default: :unresolved
+    field :shafaq, atom(), default: :general
+
+    field :high_latitude_rule, atom(), default: :middle_of_the_night
+    field :polar_circle_resolution, atom(), default: :unresolved
+    field :rounding, atom(), default: :nearest
   end
 
-  def night_portions(%CalculationParameter{}, :middle_of_the_night) do
+  def night_portions(%CalculationParameter{high_latitude_rule: :middle_of_the_night}) do
     %{
       fajr: 1 / 2,
       isha: 1 / 2
     }
   end
 
-  def night_portions(%CalculationParameter{}, :sevent_of_the_night) do
+  def night_portions(%CalculationParameter{high_latitude_rule: :sevent_of_the_night}) do
     %{
       fajr: 1 / 7,
       isha: 1 / 7
     }
   end
 
-  def night_portions(
-        %CalculationParameter{fajr_angle: fajr_angle, isha_angle: isha_angle},
-        :twilight_angle
-      ) do
+  def night_portions(%CalculationParameter{
+        fajr_angle: fajr_angle,
+        isha_angle: isha_angle,
+        high_latitude_rule: :twilight_angle
+      }) do
     %{
       fajr: fajr_angle / 60,
       isha: isha_angle / 60

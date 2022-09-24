@@ -7,12 +7,12 @@ defmodule HighLatitudeRuleTest do
 
   describe "recommended" do
     test "if latitude is less than 48" do
-      assert %Coordinates{latitude: 47.5} |> HighLatitudeRule.recommended() ==
+      assert %Coordinate{latitude: 47.5} |> HighLatitudeRule.recommended() ==
                :middle_of_the_night
     end
 
     test "if latitude is more than 48" do
-      assert %Coordinates{latitude: 49.5} |> HighLatitudeRule.recommended() ==
+      assert %Coordinate{latitude: 49.5} |> HighLatitudeRule.recommended() ==
                :sevent_of_the_night
     end
   end

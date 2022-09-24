@@ -1,6 +1,6 @@
-defmodule SolarCoordinates do
+defmodule SolarCoordinate do
   @moduledoc """
-  Documentation for `SolarCoordinates`.
+  Documentation for `SolarCoordinate`.
   """
 
   use TypedStruct

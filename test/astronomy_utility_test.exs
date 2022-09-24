@@ -18,17 +18,17 @@ defmodule AstronomyUtilityTest do
     delta1 = 18.04761
     delta2 = 18.44092
     delta3 = 18.82742
-    coordinates = %Coordinates{latitude: 42.3333, longitude: longitude}
+    coordinate = %Coordinate{latitude: 42.3333, longitude: longitude}
 
-    solar = %SolarCoordinates{declination: delta2, right_ascension: alpha2}
-    prev_solar = %SolarCoordinates{declination: delta1, right_ascension: alpha1}
-    next_solar = %SolarCoordinates{declination: delta3, right_ascension: alpha3}
+    solar = %SolarCoordinate{declination: delta2, right_ascension: alpha2}
+    prev_solar = %SolarCoordinate{declination: delta1, right_ascension: alpha1}
+    next_solar = %SolarCoordinate{declination: delta3, right_ascension: alpha3}
 
     rise =
       AstronomyUtility.corrected_hour_angle(
         m0,
         -0.5667,
-        coordinates,
+        coordinate,
         false,
         theta,
         solar,

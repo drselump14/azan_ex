@@ -9,11 +9,11 @@ defmodule SolarTime do
 
   typedstruct do
     field :date, %Date{}
-    field :coordinates, %Coordinates{}
-    field :observer, %Coordinates{}
-    field :solar, %SolarCoordinates{}
-    field :prev_solar, %SolarCoordinates{}
-    field :next_solar, %SolarCoordinates{}
+    field :coordinate, %Coordinate{}
+    field :observer, %Coordinate{}
+    field :solar, %SolarCoordinate{}
+    field :prev_solar, %SolarCoordinate{}
+    field :next_solar, %SolarCoordinate{}
     field :approx_transit, float()
     field :transit, float()
     field :sunrise, float()
@@ -22,25 +22,25 @@ defmodule SolarTime do
 
   def new(
         %Date{year: year, month: month, day: day},
-        %Coordinates{longitude: longitude} = coordinates
+        %Coordinate{longitude: longitude} = coordinate
       ) do
-    julian_day = Astronomical.julian_day(year, month + 1, day)
+    julian_day = Astronomical.julian_day(year, month, day)
 
     solar =
-      %SolarCoordinates{
+      %SolarCoordinate{
         apparent_side_real_time: apparent_side_real_time,
         right_ascension: right_ascension
-      } = SolarCoordinates.init_by_julian_day(julian_day)
+      } = SolarCoordinate.init_by_julian_day(julian_day)
 
-    prev_solar = SolarCoordinates.init_by_julian_day(julian_day - 1)
-    next_solar = SolarCoordinates.init_by_julian_day(julian_day + 1)
+    prev_solar = SolarCoordinate.init_by_julian_day(julian_day - 1)
+    next_solar = SolarCoordinate.init_by_julian_day(julian_day + 1)
 
     solar_altitude = -50.0 / 60.0
 
     m0 = Astronomical.approximate_transit(longitude, apparent_side_real_time, right_ascension)
 
     %__MODULE__{
-      observer: coordinates,
+      observer: coordinate,
       solar: solar,
       prev_solar: prev_solar,
       next_solar: next_solar,
@@ -58,7 +58,7 @@ defmodule SolarTime do
         AstronomyUtility.corrected_hour_angle(
           m0,
           solar_altitude,
-          coordinates,
+          coordinate,
           false,
           apparent_side_real_time,
           solar,
@@ -69,7 +69,7 @@ defmodule SolarTime do
         AstronomyUtility.corrected_hour_angle(
           m0,
           solar_altitude,
-          coordinates,
+          coordinate,
           true,
           apparent_side_real_time,
           solar,
@@ -84,7 +84,7 @@ defmodule SolarTime do
           approx_transit: approx_transit,
           observer: observer,
           solar:
-            %SolarCoordinates{
+            %SolarCoordinate{
               apparent_side_real_time: apparent_side_real_time
             } = solar,
           prev_solar: prev_solar,
@@ -107,10 +107,10 @@ defmodule SolarTime do
 
   def afternoon(
         %__MODULE__{
-          observer: %Coordinates{latitude: latitude},
-          solar: %SolarCoordinates{declination: declination}
+          observer: %Coordinate{latitude: latitude},
+          solar: %SolarCoordinate{declination: declination}
         } = solar_time,
-        shadow_length: shadow_length
+        shadow_length
       ) do
     tangent = abs(latitude - declination)
     inverse = shadow_length + Math.tan(Math.deg2rad(tangent))

@@ -26,4 +26,8 @@ defmodule MathUtils do
   def cos_deg(deg) do
     deg |> Math.deg2rad() |> Math.cos()
   end
+
+  def sign(num) when num > 0, do: 1
+  def sign(num) when num < 0, do: -1
+  def sign(_), do: 0
 end

@@ -3,12 +3,12 @@ defmodule HighLatitudeRule do
   Documentation for `HighLatitudeRule`.
   """
 
-  @spec recommended(Coordinates.t()) :: atom()
-  def recommended(%Coordinates{latitude: latitude}) when latitude > 48 do
+  @spec recommended(Coordinate.t()) :: atom()
+  def recommended(%Coordinate{latitude: latitude}) when latitude > 48 do
     :sevent_of_the_night
   end
 
-  def recommended(%Coordinates{} = _) do
+  def recommended(%Coordinate{} = _) do
     :middle_of_the_night
   end
 end

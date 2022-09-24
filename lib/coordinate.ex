@@ -1,6 +1,6 @@
-defmodule Coordinates do
+defmodule Coordinate do
   @moduledoc """
-  Documentation for `Coordinates`.
+  Documentation for `Coordinate`.
   """
 
   use TypedStruct

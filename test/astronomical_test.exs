@@ -10,8 +10,8 @@ defmodule AstronomicalTest do
   test "calculate solar coordinate values" do
     jd = Astronomical.julian_day(1992, 10, 13)
 
-    %SolarCoordinates{declination: delta, right_ascension: right_ascension} =
-      jd |> SolarCoordinates.init_by_julian_day()
+    %SolarCoordinate{declination: delta, right_ascension: right_ascension} =
+      jd |> SolarCoordinate.init_by_julian_day()
 
     t = jd |> Astronomical.julian_century()
     l_0 = t |> Astronomical.mean_solar_longitude()
@@ -36,8 +36,8 @@ defmodule AstronomicalTest do
   test "calculate solar coordinate value 2" do
     jd = Astronomical.julian_day(1987, 4, 10)
 
-    %SolarCoordinates{apparent_side_real_time: theta_app} =
-      jd |> SolarCoordinates.init_by_julian_day()
+    %SolarCoordinate{apparent_side_real_time: theta_app} =
+      jd |> SolarCoordinate.init_by_julian_day()
 
     t = jd |> Astronomical.julian_century()
 

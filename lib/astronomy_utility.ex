@@ -6,15 +6,15 @@ defmodule AstronomyUtility do
   def corrected_hour_angle(
         approximate_transit,
         angle,
-        %Coordinates{latitude: latitude, longitude: longitude},
+        %Coordinate{latitude: latitude, longitude: longitude},
         after_transit,
         sidereal_time,
-        %SolarCoordinates{right_ascension: right_ascension, declination: declination} = _solar,
-        %SolarCoordinates{
+        %SolarCoordinate{right_ascension: right_ascension, declination: declination} = _solar,
+        %SolarCoordinate{
           right_ascension: previous_right_ascension,
           declination: previous_declination
         } = _prev_solar,
-        %SolarCoordinates{right_ascension: next_right_ascension, declination: next_declination} =
+        %SolarCoordinate{right_ascension: next_right_ascension, declination: next_declination} =
           _next_solar
       ) do
     m0 = approximate_transit

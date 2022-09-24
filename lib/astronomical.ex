@@ -225,7 +225,7 @@ defmodule Astronomical do
         dyy -> b + (a - b) / 91.0 * (dyy - 275)
       end
 
-    sunset |> Timex.shift(seconds: adjustment |> Kernel.*(-60) |> round())
+    sunset |> DateUtils.shift_by_seconds(adjustment |> Kernel.*(60) |> round())
   end
 
   defp abcd_seasoned_adjusted_evening_twilight(latitude, :ahmer) do
@@ -255,9 +255,9 @@ defmodule Astronomical do
 
     %{
       a: 75 + 25.6 / 55.0 * abs_latitude,
-      b: 75 + 7.16 / 55.0 * abs_latitude,
-      c: 75 + 36.84 / 55.0 * abs_latitude,
-      d: 75 + 81.84 / 55.0 * abs_latitude
+      b: 75 + 2.05 / 55.0 * abs_latitude,
+      c: 75 - 9.21 / 55.0 * abs_latitude,
+      d: 75 + 6.14 / 55.0 * abs_latitude
     }
   end
 
@@ -266,8 +266,8 @@ defmodule Astronomical do
   end
 
   def julian_day(year, month, day, hours) do
-    y = if month > 2, do: year, else: year - 1
-    m = if month > 2, do: month, else: month + 12
+    y = if(month > 2, do: year, else: year - 1) |> trunc()
+    m = if(month > 2, do: month, else: month + 12) |> trunc()
     d = day + hours / 24
 
     a = (y / 100) |> trunc()

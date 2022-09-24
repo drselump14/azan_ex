@@ -3,6 +3,8 @@ defmodule Azan.TestCase do
   Doc for test case
   """
 
+  require Logger
+
   use ExUnit.CaseTemplate
 
   using do
@@ -14,10 +16,14 @@ defmodule Azan.TestCase do
   end
 
   def assert_time_string(%TimeComponent{} = time_component, time_string) do
-    time_string == TimeComponent.to_hm_string(time_component)
+    assert time_string == TimeComponent.to_hm_string(time_component)
   end
 
   def assert_to_be_close_to(a, b, digit_precision) do
+    assert to_be_close_to(a, b, digit_precision)
+  end
+
+  def to_be_close_to(a, b, digit_precision) do
     a
     |> round_decimal_by_digit(digit_precision)
     |> Kernel.==(round_decimal_by_digit(b, digit_precision))

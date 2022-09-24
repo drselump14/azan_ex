@@ -5,7 +5,7 @@ defmodule CalculationMethod do
 
   def muslim_world_league do
     %CalculationParameter{
-      method: "Muslim World League",
+      method: :muslim_world_league,
       fajr_angle: 18,
       isha_angle: 17
     }
@@ -14,7 +14,7 @@ defmodule CalculationMethod do
 
   def egyptian do
     %CalculationParameter{
-      method: "Egyptian General Authority of Survey",
+      method: :egyptian,
       fajr_angle: 19.5,
       isha_angle: 17.5
     }
@@ -23,7 +23,7 @@ defmodule CalculationMethod do
 
   def karachi do
     %CalculationParameter{
-      method: "University of Islamic Sciences, Karachi",
+      method: :karachi,
       fajr_angle: 18,
       isha_angle: 18
     }
@@ -32,7 +32,7 @@ defmodule CalculationMethod do
 
   def umm_al_quran do
     %CalculationParameter{
-      method: "Umm al-Qura University, Makkah",
+      method: :umm_al_quran,
       fajr_angle: 18.5,
       isha_angle: 0,
       isha_interval: 90
@@ -41,7 +41,7 @@ defmodule CalculationMethod do
 
   def dubai do
     %CalculationParameter{
-      method: "The General Authority of Islamic Affairs and Endowments, Dubai",
+      method: :dubai,
       fajr_angle: 18.2,
       isha_angle: 18.2
     }
@@ -53,7 +53,7 @@ defmodule CalculationMethod do
 
   def moonsighting_committee do
     params = %CalculationParameter{
-      method: "Moonsighting Committee",
+      method: :moonsighting_committee,
       fajr_angle: 18,
       isha_angle: 18
     }
@@ -65,7 +65,7 @@ defmodule CalculationMethod do
 
   def north_america do
     %CalculationParameter{
-      method: "Islamic Society of North America",
+      method: :north_america,
       fajr_angle: 15,
       isha_angle: 15
     }
@@ -74,7 +74,7 @@ defmodule CalculationMethod do
 
   def kuwait do
     %CalculationParameter{
-      method: "Ministry of Awqaf and Islamic Affairs, Kuwait",
+      method: :kuwait,
       fajr_angle: 18,
       isha_angle: 17.5
     }
@@ -82,7 +82,7 @@ defmodule CalculationMethod do
 
   def qatar do
     %CalculationParameter{
-      method: "Qatar",
+      method: :qatar,
       fajr_angle: 18,
       isha_angle: 0,
       isha_interval: 90
@@ -91,15 +91,17 @@ defmodule CalculationMethod do
 
   def singapore do
     %CalculationParameter{
-      method: "Islamic Religious Council of Singapore",
+      method: :singapore,
       fajr_angle: 20,
-      isha_angle: 18
+      isha_angle: 18,
+      rounding: :up
     }
+    |> CalculationParameter.adjust_by_method(:dhuhr, 1)
   end
 
   def tehran do
     %CalculationParameter{
-      method: "Institute of Geophysics, University of Tehran",
+      method: :tehran,
       fajr_angle: 17.7,
       isha_angle: 14,
       isha_interval: 4
