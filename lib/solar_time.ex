@@ -18,6 +18,10 @@ defmodule SolarTime do
     field :sunset, float()
   end
 
+  def new(%DateTime{} = datetime, coordinate) do
+    datetime |> DateTime.to_date() |> new(coordinate)
+  end
+
   def new(
         %Date{year: year, month: month, day: day},
         %Coordinate{longitude: longitude} = coordinate

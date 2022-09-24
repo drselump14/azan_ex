@@ -124,6 +124,70 @@ defmodule PrayerTime do
     }
   end
 
+  @spec time_for_prayer(PrayerTime.t(), atom()) :: DateTime.t()
+  def time_for_prayer(%__MODULE__{} = prayer_time, prayer_name) do
+    prayer_time
+    |> Map.get(prayer_name)
+  end
+
+  def current_prayer(
+        %__MODULE__{
+          fajr: fajr,
+          sunrise: sunrise,
+          dhuhr: dhuhr,
+          asr: asr,
+          maghrib: maghrib,
+          isha: isha
+        },
+        time
+      ) do
+    fajr_epoch = fajr |> Timex.to_unix()
+    sunrise_epoch = sunrise |> Timex.to_unix()
+    dhuhr_epoch = dhuhr |> Timex.to_unix()
+    asr_epoch = asr |> Timex.to_unix()
+    maghrib_epoch = maghrib |> Timex.to_unix()
+    isha_epoch = isha |> Timex.to_unix()
+
+    case time |> Timex.to_unix() do
+      x when x >= fajr_epoch -> :fajr
+      x when x >= isha_epoch -> :isha
+      x when x >= maghrib_epoch -> :maghrib
+      x when x >= asr_epoch -> :asr
+      x when x >= dhuhr_epoch -> :dhuhr
+      x when x >= sunrise_epoch -> :sunrise
+      _ -> :none
+    end
+  end
+
+  def next_prayer(
+        %__MODULE__{
+          fajr: fajr,
+          sunrise: sunrise,
+          dhuhr: dhuhr,
+          asr: asr,
+          maghrib: maghrib,
+          isha: isha
+        },
+        time
+      ) do
+    fajr_epoch = fajr |> Timex.to_unix()
+    sunrise_epoch = sunrise |> Timex.to_unix()
+    dhuhr_epoch = dhuhr |> Timex.to_unix()
+    asr_epoch = asr |> Timex.to_unix()
+    maghrib_epoch = maghrib |> Timex.to_unix()
+    isha_epoch = isha |> Timex.to_unix()
+
+    case time |> Timex.to_unix() do
+      x when x >= fajr_epoch -> :sunrise
+      x when x >= isha_epoch -> :fajr
+      x when x >= maghrib_epoch -> :isha
+      x when x >= asr_epoch -> :maghrib
+      x when x >= dhuhr_epoch -> :asr
+      x when x >= sunrise_epoch -> :dhuhr
+      _ -> :none
+    end
+  end
+
   def rounded_time(prayer_time, adjustment, rounding) do
     prayer_time
     |> Timex.shift(minutes: adjustment)

@@ -5,7 +5,7 @@ defmodule HighLatitudeRule do
 
   @spec recommended(Coordinate.t()) :: atom()
   def recommended(%Coordinate{latitude: latitude}) when latitude > 48 do
-    :sevent_of_the_night
+    :seventh_of_the_night
   end
 
   def recommended(%Coordinate{} = _) do

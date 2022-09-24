@@ -13,7 +13,7 @@ defmodule CalculationParameterTest do
     end
 
     test "sevent_of_the_night" do
-      assert %CalculationParameter{high_latitude_rule: :sevent_of_the_night}
+      assert %CalculationParameter{high_latitude_rule: :seventh_of_the_night}
              |> CalculationParameter.night_portions() ==
                %{fajr: 1 / 7, isha: 1 / 7}
     end

@@ -13,7 +13,7 @@ defmodule HighLatitudeRuleTest do
 
     test "if latitude is more than 48" do
       assert %Coordinate{latitude: 49.5} |> HighLatitudeRule.recommended() ==
-               :sevent_of_the_night
+               :seventh_of_the_night
     end
   end
 end

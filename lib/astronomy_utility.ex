@@ -28,31 +28,37 @@ defmodule AstronomyUtility do
     d3 = next_declination
 
     lw = -1 * longitude
-    term1 = MathUtils.sin_deg(h0) - MathUtils.sin_deg(latitude) * MathUtils.sin_deg(d2)
-    term2 = MathUtils.cos_deg(latitude) * MathUtils.cos_deg(d2)
 
-    h0_capital = (term1 / term2) |> :math.acos() |> Math.rad2deg()
+    try do
+      term1 = MathUtils.sin_deg(h0) - MathUtils.sin_deg(latitude) * MathUtils.sin_deg(d2)
+      term2 = MathUtils.cos_deg(latitude) * MathUtils.cos_deg(d2)
 
-    m = if after_transit, do: m0 + h0_capital / 360, else: m0 - h0_capital / 360
-    theta = (theta0 + 360.985647 * m) |> MathUtils.unwind_angle()
-    a = Astronomical.interpolate_angles(a2, a1, a3, m) |> MathUtils.unwind_angle()
+      h0_capital = (term1 / term2) |> :math.acos() |> Math.rad2deg()
 
-    delta = Astronomical.interpolate(d2, d1, d3, m)
-    h_capital = theta - lw - a
+      m = if after_transit, do: m0 + h0_capital / 360, else: m0 - h0_capital / 360
+      theta = (theta0 + 360.985647 * m) |> MathUtils.unwind_angle()
+      a = Astronomical.interpolate_angles(a2, a1, a3, m) |> MathUtils.unwind_angle()
 
-    h =
-      Astronomical.altitude_of_celestial_body(
-        latitude,
-        delta,
-        h_capital
-      )
+      delta = Astronomical.interpolate(d2, d1, d3, m)
+      h_capital = theta - lw - a
 
-    term3 = h - h0
+      h =
+        Astronomical.altitude_of_celestial_body(
+          latitude,
+          delta,
+          h_capital
+        )
 
-    term4 =
-      360 * MathUtils.cos_deg(delta) * MathUtils.cos_deg(latitude) * MathUtils.sin_deg(h_capital)
+      term3 = h - h0
 
-    dm = term3 / term4
-    (m + dm) * 24
+      term4 =
+        360 * MathUtils.cos_deg(delta) * MathUtils.cos_deg(latitude) *
+          MathUtils.sin_deg(h_capital)
+
+      dm = term3 / term4
+      (m + dm) * 24
+    rescue
+      ArithmeticError -> {:error, :arithmatic_error}
+    end
   end
 end

@@ -19,6 +19,10 @@ defmodule TimeComponent do
         iex> TimeComponent.new(12.5)
         %TimeComponent{hour: 12, minute: 30, second: 0}
   """
+  def new({:error, _}) do
+    {:error, :invalid_time_component}
+  end
+
   def new(num) do
     hour = num |> floor()
     minute = ((num - hour) * 60) |> floor()
@@ -51,6 +55,9 @@ defmodule TimeComponent do
         iex> TimeComponent.new(12.5) |> TimeComponent.create_utc_datetime(2015, 1, 1)
         ~U[2015-01-01 12:30:00Z]
   """
+
+  def create_utc_datetime({:error, _reason}, _date), do: {:error, :invalid_date}
+
   def create_utc_datetime(%TimeComponent{hour: hour, minute: minute, second: second}, %Date{
         year: year,
         month: month,
@@ -64,6 +71,8 @@ defmodule TimeComponent do
     )
   end
 
+  def create_utc_datetime({:error, _reason}, _year, _month, _day), do: {:error, :invalid_date}
+
   def create_utc_datetime(
         %TimeComponent{hour: hour, minute: minute, second: second},
         year,
@@ -73,6 +82,25 @@ defmodule TimeComponent do
       when hour > 23 do
     day_offset = hour |> div(24)
     hour = hour |> rem(24)
+
+    create_utc_datetime(
+      %TimeComponent{hour: hour, minute: minute, second: second},
+      year,
+      month,
+      day
+    )
+    |> Timex.shift(days: day_offset)
+  end
+
+  def create_utc_datetime(
+        %TimeComponent{hour: hour, minute: minute, second: second},
+        year,
+        month,
+        day
+      )
+      when hour < 0 do
+    day_offset = hour |> div(24)
+    hour = hour + 24
 
     create_utc_datetime(
       %TimeComponent{hour: hour, minute: minute, second: second},

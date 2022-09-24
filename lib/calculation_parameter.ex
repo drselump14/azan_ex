@@ -33,7 +33,7 @@ defmodule CalculationParameter do
     }
   end
 
-  def night_portions(%CalculationParameter{high_latitude_rule: :sevent_of_the_night}) do
+  def night_portions(%CalculationParameter{high_latitude_rule: :seventh_of_the_night}) do
     %{
       fajr: 1 / 7,
       isha: 1 / 7
