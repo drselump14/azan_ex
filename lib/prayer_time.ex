@@ -18,11 +18,8 @@ defmodule PrayerTime do
   def find(
         %Coordinate{latitude: latitude} = coordinate,
         date,
-        %CalculationParameter{
-          adjustments: adjustments,
-          method_adjustments: method_adjustments,
-          rounding: rounding
-        } = calculation_parameter
+        %CalculationParameter{polar_circle_resolution: polar_circle_resolution} =
+          calculation_parameter
       ) do
     solar_time =
       %SolarTime{transit: transit, sunrise: sunrise, sunset: sunset} =
@@ -32,14 +29,23 @@ defmodule PrayerTime do
 
     tomorrow_solar_time = SolarTime.new(tomorrow, coordinate)
 
-    with {:ok, tomorrow_sunrise} <-
-           SunriseTime.find(tomorrow_solar_time.sunrise, tomorrow, coordinate),
-         {:ok, sunset_time} <- SunsetTime.find(sunset, date, calculation_parameter, coordinate),
-         {:ok, night} <- calculate_night(tomorrow_sunrise, sunset_time),
-         {:ok, sunrise_time} <-
+    {solar_time, tomorrow_solar_time} =
+      SolarTime.resolve_safe_time(
+        solar_time,
+        tomorrow_solar_time,
+        polar_circle_resolution,
+        date,
+        coordinate
+      )
+
+    with {:ok, sunrise_time} <-
            SunriseTime.find(sunrise, date, calculation_parameter, coordinate),
          {:ok, dhuhr_time} <- DhuhrTime.find(transit, date, calculation_parameter, coordinate),
          {:ok, asr_time} <- AsrTime.find(solar_time, date, calculation_parameter),
+         {:ok, tomorrow_sunrise} <-
+           SunriseTime.find(tomorrow_solar_time.sunrise, tomorrow, coordinate),
+         {:ok, sunset_time} <- SunsetTime.find(sunset, date, calculation_parameter, coordinate),
+         {:ok, night} <- calculate_night(tomorrow_sunrise, sunset_time),
          {:ok, fajr_time} <-
            FajrTime.find(solar_time, sunrise_time, night, latitude, date, calculation_parameter),
          {:ok, isha_time} <-
@@ -56,7 +62,8 @@ defmodule PrayerTime do
         isha: isha_time |> IshaTime.adjust(calculation_parameter)
       }
     else
-      {:error, reason} -> {:error, reason}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -130,9 +137,9 @@ defmodule PrayerTime do
     |> DateUtils.rounded_minute(rounding)
   end
 
-  def calculate_night({:error, _}, _sunset_time), do: {:error, :invalid}
-  def calculate_night(_tomorrow_sunrise, {:error, _}), do: {:error, :invalid}
-
+  # def calculate_night({:error, _}, _sunset_time), do: {:error, :invalid}
+  # def calculate_night(_tomorrow_sunrise, {:error, _}), do: {:error, :invalid}
+  #
   def calculate_night(tomorrow_sunrise, sunset_time) do
     {:ok, Timex.to_unix(tomorrow_sunrise) - Timex.to_unix(sunset_time)}
   end

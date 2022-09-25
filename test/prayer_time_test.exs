@@ -681,26 +681,26 @@ defmodule PrayerTimeTest do
         )
     end
 
-    # test "midnight sun case should fail to compute targeted prayer times with the 'aqrabBalad' resolver",
-    #      %{
-    #        arjeplog_sweden: arjeplog_sweden,
-    #        date_affected_by_midnight_sun: date_affected_by_midnight_sun,
-    #        aqrab_balad_params: aqrab_balad_params
-    #      } do
-    #   %PrayerTime{
-    #     fajr: %DateTime{},
-    #     sunrise: %DateTime{},
-    #     dhuhr: %DateTime{},
-    #     asr: %DateTime{},
-    #     maghrib: %DateTime{},
-    #     isha: %DateTime{}
-    #   } =
-    #     PrayerTime.find(
-    #       arjeplog_sweden,
-    #       date_affected_by_midnight_sun,
-    #       aqrab_balad_params
-    #     )
-    # end
+    test "midnight sun case should fail to compute targeted prayer times with the 'aqrabBalad' resolver",
+         %{
+           arjeplog_sweden: arjeplog_sweden,
+           date_affected_by_midnight_sun: date_affected_by_midnight_sun,
+           aqrab_balad_params: aqrab_balad_params
+         } do
+      %PrayerTime{
+        fajr: %DateTime{},
+        sunrise: %DateTime{},
+        dhuhr: %DateTime{},
+        asr: %DateTime{},
+        maghrib: %DateTime{},
+        isha: %DateTime{}
+      } =
+        PrayerTime.find(
+          arjeplog_sweden,
+          date_affected_by_midnight_sun,
+          aqrab_balad_params
+        )
+    end
   end
 
   def tz_12_format_string(%DateTime{} = time, timezone) do

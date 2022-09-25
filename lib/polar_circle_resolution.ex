@@ -16,9 +16,11 @@ defmodule PolarCircleResolution do
     field :tomorrow_solar_time, SolarTime.t()
   end
 
-  def is_valid_solar_time(%SolarTime{sunrise: nil}), do: false
-  def is_valid_solar_time(%SolarTime{sunset: nil}), do: false
-  def is_valid_solar_time(%SolarTime{}), do: true
+  def is_valid_solar_time(%SolarTime{sunrise: sunrise, sunset: sunset})
+      when is_number(sunrise) and is_number(sunset),
+      do: true
+
+  def is_valid_solar_time(%SolarTime{}), do: false
 
   def aqrab_yaum_resolver(
         %Coordinate{} = coordinate,

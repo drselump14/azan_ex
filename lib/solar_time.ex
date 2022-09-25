@@ -119,4 +119,29 @@ defmodule SolarTime do
     angle = (1.0 / inverse) |> Math.atan() |> Math.rad2deg()
     solar_time |> hour_angle(angle, true)
   end
+
+  def resolve_safe_time(
+        %SolarTime{sunset: sunset, sunrise: sunrise},
+        %SolarTime{sunrise: tomorrow_sunrise},
+        polar_circle_resolution,
+        date,
+        coordinate
+      )
+      when not is_number(sunrise) or not is_number(sunset) or
+             (not is_number(tomorrow_sunrise) and polar_circle_resolution !== :unresolved) do
+    %{solar_time: solar_time, tomorrow_solar_time: tomorrow_solar_time} =
+      polar_circle_resolution
+      |> PolarCircleResolution.polar_circle_resolved_values(date, coordinate)
+
+    {solar_time, tomorrow_solar_time}
+  end
+
+  def resolve_safe_time(
+        solar_time,
+        tomorrow_solar_time,
+        _polar_circle_resolution,
+        _date,
+        _coordinate
+      ),
+      do: {solar_time, tomorrow_solar_time}
 end
