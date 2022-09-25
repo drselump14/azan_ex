@@ -12,7 +12,7 @@ defmodule SunsetTime do
     field :coordinate, Coordinate.t()
   end
 
-  def find(%__MODULE__{
+  def find!(%__MODULE__{
         date: date,
         coordinate: coordinate,
         calculation_parameter: %CalculationParameter{
@@ -27,7 +27,7 @@ defmodule SunsetTime do
     |> TimeComponent.create_utc_datetime(date)
   end
 
-  def find(%__MODULE__{
+  def find!(%__MODULE__{
         sunset: sunset,
         date: date,
         calculation_parameter: %CalculationParameter{
@@ -35,5 +35,27 @@ defmodule SunsetTime do
         }
       }) do
     TimeComponent.new(sunset) |> TimeComponent.create_utc_datetime(date)
+  end
+
+  def find(
+        sunset,
+        date,
+        %CalculationParameter{} = calculation_parameter,
+        %Coordinate{} = coordinate
+      ) do
+    {:ok,
+     %__MODULE__{
+       sunset: sunset,
+       date: date,
+       calculation_parameter: calculation_parameter,
+       coordinate: coordinate
+     }
+     |> __MODULE__.find!()}
+  end
+
+  def adjust(datetime, %CalculationParameter{
+        rounding: rounding
+      }) do
+    datetime |> DateUtils.rounded_minute(rounding)
   end
 end

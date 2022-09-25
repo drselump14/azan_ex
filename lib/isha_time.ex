@@ -14,7 +14,27 @@ defmodule IshaTime do
     field :night, number()
   end
 
-  def find(%__MODULE__{
+  def find(
+        solar_time,
+        sunset_time,
+        night,
+        latitude,
+        date,
+        %CalculationParameter{} = calculation_parameter
+      ) do
+    {:ok,
+     %__MODULE__{
+       calculation_parameter: calculation_parameter,
+       sunset_time: sunset_time,
+       solar_time: solar_time,
+       night: night,
+       latitude: latitude,
+       date: date
+     }
+     |> __MODULE__.find!()}
+  end
+
+  def find!(%__MODULE__{
         sunset_time: sunset_time,
         calculation_parameter: %CalculationParameter{isha_interval: isha_interval}
       })
@@ -22,7 +42,7 @@ defmodule IshaTime do
     sunset_time |> Timex.shift(minutes: isha_interval)
   end
 
-  def find(
+  def find!(
         %__MODULE__{
           calculation_parameter: calculation_parameter,
           night: night,
@@ -62,13 +82,18 @@ defmodule IshaTime do
         date: date,
         solar_time: solar_time
       }) do
-    solar_time
-    |> SolarTime.hour_angle(-1 * isha_angle, true)
-    |> TimeComponent.new()
-    |> TimeComponent.create_utc_datetime(date)
+    case solar_time |> SolarTime.hour_angle(-1 * isha_angle, true) do
+      {:error, _} ->
+        {:error, :invalid_datetime}
+
+      corrected_hour_angle ->
+        corrected_hour_angle
+        |> TimeComponent.new()
+        |> TimeComponent.create_utc_datetime(date)
+    end
   end
 
-  def naive_or_safe_isha({:error, :invalid_date}, safe_isha), do: safe_isha
+  def naive_or_safe_isha({:error, _}, safe_isha), do: safe_isha
 
   def naive_or_safe_isha(naive_isha_time, safe_isha_time) do
     case DateTime.compare(safe_isha_time, naive_isha_time) do
@@ -78,5 +103,14 @@ defmodule IshaTime do
       _ ->
         naive_isha_time
     end
+  end
+
+  def adjust(datetime, %CalculationParameter{
+        adjustments: %{isha: adjustment},
+        method_adjustments: %{isha: method_adjustment},
+        rounding: rounding
+      }) do
+    adjustment = adjustment |> DateUtils.sum_adjustment(method_adjustment)
+    datetime |> DateUtils.rounded_time(adjustment, rounding)
   end
 end

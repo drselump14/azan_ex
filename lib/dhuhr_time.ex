@@ -12,7 +12,7 @@ defmodule DhuhrTime do
     field :coordinate, Coordinate.t()
   end
 
-  def find(%__MODULE__{
+  def find!(%__MODULE__{
         date: date,
         coordinate: coordinate,
         calculation_parameter: %CalculationParameter{
@@ -27,7 +27,7 @@ defmodule DhuhrTime do
     |> TimeComponent.create_utc_datetime(date)
   end
 
-  def find(%__MODULE__{
+  def find!(%__MODULE__{
         transit: transit,
         date: date,
         calculation_parameter: %CalculationParameter{
@@ -35,5 +35,30 @@ defmodule DhuhrTime do
         }
       }) do
     TimeComponent.new(transit) |> TimeComponent.create_utc_datetime(date)
+  end
+
+  def find(
+        transit,
+        date,
+        %CalculationParameter{} = calculation_parameter,
+        %Coordinate{} = coordinate
+      ) do
+    {:ok,
+     %__MODULE__{
+       transit: transit,
+       date: date,
+       calculation_parameter: calculation_parameter,
+       coordinate: coordinate
+     }
+     |> DhuhrTime.find!()}
+  end
+
+  def adjust(datetime, %CalculationParameter{
+        adjustments: %{dhuhr: adjustment},
+        method_adjustments: %{dhuhr: method_adjustment},
+        rounding: rounding
+      }) do
+    adjustment = adjustment |> DateUtils.sum_adjustment(method_adjustment)
+    datetime |> DateUtils.rounded_time(adjustment, rounding)
   end
 end

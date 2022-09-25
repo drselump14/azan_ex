@@ -13,13 +13,31 @@ defmodule MaghribTime do
     field :date, Date.t()
   end
 
-  def find(%__MODULE__{
+  def find(
+        solar_time,
+        sunset_time,
+        isha_time,
+        date,
+        %CalculationParameter{} = calculation_parameter
+      ) do
+    {:ok,
+     %__MODULE__{
+       solar_time: solar_time,
+       sunset_time: sunset_time,
+       calculation_parameter: calculation_parameter,
+       isha_time: isha_time,
+       date: date
+     }
+     |> __MODULE__.find!()}
+  end
+
+  def find!(%__MODULE__{
         sunset_time: sunset_time,
         calculation_parameter: %CalculationParameter{maghrib_angle: nil}
       }),
       do: sunset_time
 
-  def find(%__MODULE__{
+  def find!(%__MODULE__{
         solar_time: solar_time,
         sunset_time: sunset_time,
         isha_time: isha_time,
@@ -38,5 +56,14 @@ defmodule MaghribTime do
     |> SolarTime.hour_angle(-1 * maghrib_angle, true)
     |> TimeComponent.new()
     |> TimeComponent.create_utc_datetime(date)
+  end
+
+  def adjust(datetime, %CalculationParameter{
+        adjustments: %{maghrib: adjustment},
+        method_adjustments: %{maghrib: method_adjustment},
+        rounding: rounding
+      }) do
+    adjustment = adjustment |> DateUtils.sum_adjustment(method_adjustment)
+    datetime |> DateUtils.rounded_time(adjustment, rounding)
   end
 end

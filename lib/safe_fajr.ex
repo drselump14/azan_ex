@@ -32,9 +32,9 @@ defmodule SafeFajr do
         sunrise_time: sunrise_time,
         night: night
       }) do
-    %{fajr: portion} = calculation_parameter |> CalculationParameter.night_portions()
-    night_fraction = night * portion
-
-    sunrise_time |> DateUtils.shift_by_seconds(-1 * night_fraction)
+    with %{fajr: portion} <- calculation_parameter |> CalculationParameter.night_portions(),
+         night_fraction <- night * portion do
+      sunrise_time |> DateUtils.shift_by_seconds(-1 * night_fraction)
+    end
   end
 end

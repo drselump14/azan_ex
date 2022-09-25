@@ -32,96 +32,32 @@ defmodule PrayerTime do
 
     tomorrow_solar_time = SolarTime.new(tomorrow, coordinate)
 
-    tomorrow_sunrise =
-      tomorrow_solar_time.sunrise
-      |> TimeComponent.new()
-      |> TimeComponent.create_utc_datetime(tomorrow.year, tomorrow.month, tomorrow.day)
-
-    sunrise_time =
-      %SunriseTime{
-        sunrise: sunrise,
-        date: date,
-        calculation_parameter: calculation_parameter,
-        coordinate: coordinate
+    with {:ok, tomorrow_sunrise} <-
+           SunriseTime.find(tomorrow_solar_time.sunrise, tomorrow, coordinate),
+         {:ok, sunset_time} <- SunsetTime.find(sunset, date, calculation_parameter, coordinate),
+         {:ok, night} <- calculate_night(tomorrow_sunrise, sunset_time),
+         {:ok, sunrise_time} <-
+           SunriseTime.find(sunrise, date, calculation_parameter, coordinate),
+         {:ok, dhuhr_time} <- DhuhrTime.find(transit, date, calculation_parameter, coordinate),
+         {:ok, asr_time} <- AsrTime.find(solar_time, date, calculation_parameter),
+         {:ok, fajr_time} <-
+           FajrTime.find(solar_time, sunrise_time, night, latitude, date, calculation_parameter),
+         {:ok, isha_time} <-
+           IshaTime.find(solar_time, sunset_time, night, latitude, date, calculation_parameter),
+         {:ok, maghrib_time} <-
+           MaghribTime.find(solar_time, sunset_time, isha_time, date, calculation_parameter) do
+      %__MODULE__{
+        fajr: fajr_time |> FajrTime.adjust(calculation_parameter),
+        sunrise: sunrise_time |> SunriseTime.adjust(calculation_parameter),
+        dhuhr: dhuhr_time |> DhuhrTime.adjust(calculation_parameter),
+        asr: asr_time |> AsrTime.adjust(calculation_parameter),
+        sunset: sunset_time |> SunsetTime.adjust(calculation_parameter),
+        maghrib: maghrib_time |> MaghribTime.adjust(calculation_parameter),
+        isha: isha_time |> IshaTime.adjust(calculation_parameter)
       }
-      |> SunriseTime.find()
-
-    dhuhr_time =
-      %DhuhrTime{
-        transit: transit,
-        date: date,
-        calculation_parameter: calculation_parameter,
-        coordinate: coordinate
-      }
-      |> DhuhrTime.find()
-
-    asr_time =
-      %AsrTime{
-        solar_time: solar_time,
-        calculation_parameter: calculation_parameter,
-        date: date
-      }
-      |> AsrTime.find()
-
-    sunset_time =
-      %SunsetTime{
-        sunset: sunset,
-        date: date,
-        calculation_parameter: calculation_parameter,
-        coordinate: coordinate
-      }
-      |> SunsetTime.find()
-
-    night = calculate_night(tomorrow_sunrise, sunset_time)
-
-    fajr_time =
-      %FajrTime{
-        calculation_parameter: calculation_parameter,
-        sunrise_time: sunrise_time,
-        solar_time: solar_time,
-        night: night,
-        latitude: latitude,
-        date: date
-      }
-      |> FajrTime.find()
-
-    isha_time =
-      %IshaTime{
-        solar_time: solar_time,
-        date: date,
-        calculation_parameter: calculation_parameter,
-        sunset_time: sunset_time,
-        latitude: latitude,
-        night: night
-      }
-      |> IshaTime.find()
-
-    maghrib_time =
-      %MaghribTime{
-        solar_time: solar_time,
-        sunset_time: sunset_time,
-        calculation_parameter: calculation_parameter,
-        isha_time: isha_time,
-        date: date
-      }
-      |> MaghribTime.find()
-
-    fajr_adjustment = adjustments.fajr |> sum_adjustment(method_adjustments.fajr)
-    sunrise_adjustment = adjustments.sunrise |> sum_adjustment(method_adjustments.sunrise)
-    dhuhr_adjustment = adjustments.dhuhr |> sum_adjustment(method_adjustments.dhuhr)
-    asr_adjustment = adjustments.asr |> sum_adjustment(method_adjustments.asr)
-    maghrib_adjustment = adjustments.maghrib |> sum_adjustment(method_adjustments.maghrib)
-    isha_adjustment = adjustments.isha |> sum_adjustment(method_adjustments.isha)
-
-    %__MODULE__{
-      fajr: fajr_time |> rounded_time(fajr_adjustment, rounding),
-      sunrise: sunrise_time |> rounded_time(sunrise_adjustment, rounding),
-      dhuhr: dhuhr_time |> rounded_time(dhuhr_adjustment, rounding),
-      asr: asr_time |> rounded_time(asr_adjustment, rounding),
-      sunset: sunset_time |> DateUtils.rounded_minute(rounding),
-      maghrib: maghrib_time |> rounded_time(maghrib_adjustment, rounding),
-      isha: isha_time |> rounded_time(isha_adjustment, rounding)
-    }
+    else
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   @spec time_for_prayer(PrayerTime.t(), atom()) :: DateTime.t()
@@ -194,8 +130,11 @@ defmodule PrayerTime do
     |> DateUtils.rounded_minute(rounding)
   end
 
+  def calculate_night({:error, _}, _sunset_time), do: {:error, :invalid}
+  def calculate_night(_tomorrow_sunrise, {:error, _}), do: {:error, :invalid}
+
   def calculate_night(tomorrow_sunrise, sunset_time) do
-    Timex.to_unix(tomorrow_sunrise) - Timex.to_unix(sunset_time)
+    {:ok, Timex.to_unix(tomorrow_sunrise) - Timex.to_unix(sunset_time)}
   end
 
   def sum_adjustment(nil, nil), do: 0

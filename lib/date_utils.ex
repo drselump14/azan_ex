@@ -35,4 +35,15 @@ defmodule DateUtils do
     milliseconds_offset = (seconds_offset * 1000) |> round()
     date |> Timex.shift(milliseconds: milliseconds_offset)
   end
+
+  def sum_adjustment(nil, nil), do: 0
+  def sum_adjustment(adjustment_1, nil), do: adjustment_1
+  def sum_adjustment(nil, adjustment_2), do: adjustment_2
+  def sum_adjustment(adjustment_1, adjustment_2), do: adjustment_1 + adjustment_2
+
+  def rounded_time(prayer_time, adjustment, rounding) do
+    prayer_time
+    |> Timex.shift(minutes: adjustment)
+    |> DateUtils.rounded_minute(rounding)
+  end
 end
