@@ -5,7 +5,7 @@ defmodule CalculationParameter do
   use TypedStruct
 
   typedstruct do
-    field :method, String.t(), default: "Other"
+    field :method, atom(), default: :other
     field :fajr_angle, float(), default: 0
     field :isha_angle, float(), default: 0
     field :isha_interval, integer(), default: 0

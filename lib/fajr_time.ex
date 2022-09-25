@@ -22,16 +22,21 @@ defmodule FajrTime do
         date,
         %CalculationParameter{} = calculation_parameter
       ) do
-    {:ok,
-     %__MODULE__{
-       calculation_parameter: calculation_parameter,
-       sunrise_time: sunrise_time,
-       solar_time: solar_time,
-       night: night,
-       latitude: latitude,
-       date: date
-     }
-     |> __MODULE__.find!()}
+    case %__MODULE__{
+           calculation_parameter: calculation_parameter,
+           sunrise_time: sunrise_time,
+           solar_time: solar_time,
+           night: night,
+           latitude: latitude,
+           date: date
+         }
+         |> __MODULE__.find!() do
+      %DateTime{} = fajr_time ->
+        {:ok, fajr_time}
+
+      {:error, error} ->
+        {:error, error}
+    end
   end
 
   def find!(%__MODULE__{

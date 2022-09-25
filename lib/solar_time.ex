@@ -81,6 +81,22 @@ defmodule SolarTime do
     }
   end
 
+  @spec find_pair_solar_time(Date.t(), Coordinate.t(), CalculationParameter.t()) ::
+          {:ok, {SolarTime.t(), SolarTime.t()}}
+  def find_pair_solar_time(
+        %Date{} = date,
+        %Coordinate{} = coordinate,
+        %CalculationParameter{polar_circle_resolution: polar_circle_resolution}
+      ) do
+    tomorrow = date |> Timex.shift(days: 1)
+
+    pair =
+      new(date, coordinate)
+      |> resolve_safe_time(new(tomorrow, coordinate), polar_circle_resolution, date, coordinate)
+
+    {:ok, pair}
+  end
+
   def hour_angle(
         %__MODULE__{
           approx_transit: approx_transit,
