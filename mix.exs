@@ -1,4 +1,4 @@
-defmodule Azan.MixProject do
+defmodule Azan.Azan.MixProject do
   @moduledoc """
     mix for azan_ex
   """

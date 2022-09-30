@@ -1,4 +1,4 @@
-# AzanEx
+# Azan
 
 **TODO: Add description**
 

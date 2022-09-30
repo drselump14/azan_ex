@@ -7,6 +7,8 @@ defmodule Azan.TestCase do
 
   use ExUnit.CaseTemplate
 
+  alias Azan.TimeComponent
+
   using do
     quote do
       use ExUnit.Case, async: true
