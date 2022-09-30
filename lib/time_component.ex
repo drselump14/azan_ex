@@ -98,7 +98,25 @@ defmodule TimeComponent do
         month,
         day
       )
-      when hour < 0 do
+      when hour < 0 and hour > -23 do
+    hour = hour + 24
+
+    create_utc_datetime(
+      %TimeComponent{hour: hour, minute: minute, second: second},
+      year,
+      month,
+      day
+    )
+    |> Timex.shift(days: -1)
+  end
+
+  def create_utc_datetime(
+        %TimeComponent{hour: hour, minute: minute, second: second},
+        year,
+        month,
+        day
+      )
+      when hour < -23 do
     day_offset = hour |> div(24)
     hour = hour + 24
 

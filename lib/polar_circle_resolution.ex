@@ -6,6 +6,8 @@ defmodule PolarCircleResolution do
   @latitude_variation_step 0.5
   @unsafe_location 65
 
+  require Logger
+
   use TypedStruct
 
   typedstruct do
@@ -22,18 +24,15 @@ defmodule PolarCircleResolution do
 
   def is_valid_solar_time(%SolarTime{}), do: false
 
-  def aqrab_yaum_resolver(
-        %Coordinate{} = coordinate,
-        %Date{} = date
-      ) do
-    aqrab_yaum_resolver(coordinate, date, 1, 1)
-  end
+  def aqrab_yaum_resolver(_coordinate, _date, days_added, _direction)
+      when days_added > ceil(365 / 2),
+      do: nil
 
   def aqrab_yaum_resolver(
         %Coordinate{} = coordinate,
         %Date{} = date,
-        days_added,
-        direction
+        days_added \\ 1,
+        direction \\ 1
       ) do
     epoch_date = date |> Timex.shift(days: days_added * direction)
     tomorrow = epoch_date |> Timex.shift(days: 1)
@@ -51,13 +50,12 @@ defmodule PolarCircleResolution do
         }
 
       _ ->
-        aqrab_yaum_resolver(coordinate, date, days_added + 1, direction)
+        days_offset = if direction > 0, do: 0, else: 1
+        days_added = days_added + days_offset
+
+        aqrab_yaum_resolver(coordinate, date, days_added, -direction)
     end
   end
-
-  def aqrab_yaum_resolver(_coordinate, _date, days_added, _direction)
-      when days_added > ceil(365 / 2),
-      do: nil
 
   def aqrab_balad_resolver(%Coordinate{} = coordinate, %Date{} = date, latitude) do
     new_coordinate = %{coordinate | latitude: latitude}
@@ -88,8 +86,10 @@ defmodule PolarCircleResolution do
   end
 
   def polar_circle_resolved_values(:aqrab_yaum, %Date{} = date, %Coordinate{} = coordinate) do
-    coordinate |> aqrab_yaum_resolver(date) ||
-      :unresolved |> polar_circle_resolved_values(date, coordinate)
+    resolved = coordinate |> aqrab_yaum_resolver(date)
+    default = default_polar_circle_resolve_values(date, coordinate)
+
+    resolved || default
   end
 
   def polar_circle_resolved_values(
@@ -99,7 +99,7 @@ defmodule PolarCircleResolution do
       ) do
     coordinate
     |> aqrab_balad_resolver(date, latitude - MathUtils.sign(latitude) * @latitude_variation_step) ||
-      :unresolved |> polar_circle_resolved_values(date, coordinate)
+      default_polar_circle_resolve_values(date, coordinate)
   end
 
   def polar_circle_resolved_values(:unresolved, %Date{} = date, %Coordinate{} = coordinate) do
@@ -112,5 +112,9 @@ defmodule PolarCircleResolution do
       solar_time: SolarTime.new(date, coordinate),
       tomorrow_solar_time: SolarTime.new(tomorrow, coordinate)
     }
+  end
+
+  def default_polar_circle_resolve_values(date, coordinate) do
+    :unresolved |> polar_circle_resolved_values(date, coordinate)
   end
 end

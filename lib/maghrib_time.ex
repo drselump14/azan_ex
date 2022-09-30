@@ -33,8 +33,9 @@ defmodule MaghribTime do
 
   def find!(%__MODULE__{
         sunset_time: sunset_time,
-        calculation_parameter: %CalculationParameter{maghrib_angle: nil}
-      }),
+        calculation_parameter: %CalculationParameter{maghrib_angle: maghrib_angle}
+      })
+      when is_nil(maghrib_angle) or maghrib_angle == 0,
       do: sunset_time
 
   def find!(%__MODULE__{

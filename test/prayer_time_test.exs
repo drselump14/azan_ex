@@ -246,7 +246,7 @@ defmodule PrayerTimeTest do
 
       assert prayer_time |> PrayerTime.current_prayer(fajr) == :fajr
       assert prayer_time |> PrayerTime.current_prayer(fajr |> Timex.shift(seconds: 1)) == :fajr
-      assert prayer_time |> PrayerTime.current_prayer(fajr |> Timex.shift(seconds: -1)) == :isha
+      assert prayer_time |> PrayerTime.current_prayer(fajr |> Timex.shift(seconds: -1)) == :none
 
       assert prayer_time |> PrayerTime.current_prayer(sunrise |> Timex.shift(seconds: 1)) ==
                :sunrise
@@ -298,7 +298,7 @@ defmodule PrayerTimeTest do
       assert prayer_time |> PrayerTime.next_prayer(dhuhr |> Timex.shift(seconds: 1)) == :asr
       assert prayer_time |> PrayerTime.next_prayer(asr |> Timex.shift(seconds: 1)) == :maghrib
       assert prayer_time |> PrayerTime.next_prayer(maghrib |> Timex.shift(seconds: 1)) == :isha
-      assert prayer_time |> PrayerTime.next_prayer(isha |> Timex.shift(seconds: 1)) == :fajr
+      assert prayer_time |> PrayerTime.next_prayer(isha |> Timex.shift(seconds: 1)) == :none
     end
 
     test "adjusting prayer time with high latitude rule" do
@@ -663,6 +663,10 @@ defmodule PrayerTimeTest do
         aqrab_balad_params: %{
           CalculationMethod.muslim_world_league()
           | polar_circle_resolution: :aqrab_balad
+        },
+        aqrab_yaum_params: %{
+          CalculationMethod.muslim_world_league()
+          | polar_circle_resolution: :aqrab_yaum
         }
       }
     end
@@ -701,9 +705,117 @@ defmodule PrayerTimeTest do
           aqrab_balad_params
         )
     end
+
+    test "midnight sun case should fail to compute targeted prayer times with the 'aqrabYaum' resolver",
+         %{
+           arjeplog_sweden: arjeplog_sweden,
+           date_affected_by_midnight_sun: date_affected_by_midnight_sun,
+           aqrab_yaum_params: aqrab_yaum_params
+         } do
+      %PrayerTime{
+        fajr: %DateTime{},
+        sunrise: %DateTime{},
+        dhuhr: %DateTime{},
+        asr: %DateTime{},
+        maghrib: %DateTime{},
+        isha: %DateTime{}
+      } =
+        PrayerTime.find(
+          arjeplog_sweden,
+          date_affected_by_midnight_sun,
+          aqrab_yaum_params
+        )
+    end
+
+    test "polar night case should fail to compute targeted prayer times with the 'unresolved' resolver",
+         %{
+           amundsen_scott_antarctic: amundsen_scott_antarctic,
+           date_affected_by_polar_night: date_affected_by_polar_night,
+           unresolved_params: unresolved_params
+         } do
+      {:error, _} =
+        PrayerTime.find(
+          amundsen_scott_antarctic,
+          date_affected_by_polar_night,
+          unresolved_params
+        )
+    end
+
+    test "polar night case should fail to compute targeted prayer times with the 'aqrabBalad' resolver",
+         %{
+           amundsen_scott_antarctic: amundsen_scott_antarctic,
+           date_affected_by_polar_night: date_affected_by_polar_night,
+           aqrab_balad_params: aqrab_balad_params
+         } do
+      %PrayerTime{
+        fajr: %DateTime{},
+        sunrise: %DateTime{},
+        dhuhr: %DateTime{},
+        asr: %DateTime{},
+        maghrib: %DateTime{},
+        isha: %DateTime{}
+      } =
+        PrayerTime.find(
+          amundsen_scott_antarctic,
+          date_affected_by_polar_night,
+          aqrab_balad_params
+        )
+    end
+
+    test "polar night case should fail to compute targeted prayer times with the 'aqrabYaum' resolver",
+         %{
+           amundsen_scott_antarctic: amundsen_scott_antarctic,
+           date_affected_by_polar_night: date_affected_by_polar_night,
+           aqrab_yaum_params: aqrab_yaum_params
+         } do
+      %PrayerTime{
+        fajr: %DateTime{},
+        sunrise: %DateTime{},
+        dhuhr: %DateTime{},
+        asr: %DateTime{},
+        maghrib: %DateTime{},
+        isha: %DateTime{}
+      } =
+        PrayerTime.find(
+          amundsen_scott_antarctic,
+          date_affected_by_polar_night,
+          aqrab_yaum_params
+        )
+    end
+
+    test "Polar night calculating times for the polar circle" do
+      coordinate = Coordinate.new(66.7222444, 17.7189)
+      date = Date.new!(2020, 6, 21)
+
+      params = %{
+        CalculationMethod.muslim_world_league()
+        | polar_circle_resolution: :aqrab_yaum,
+          high_latitude_rule: :seventh_of_the_night
+      }
+
+      %PrayerTime{
+        fajr: fajr,
+        sunrise: sunrise,
+        dhuhr: dhuhr,
+        asr: asr,
+        maghrib: maghrib,
+        isha: isha
+      } = PrayerTime.find(coordinate, date, params)
+
+      assert fajr |> tz_full_format_string("Europe/Stockholm") == "June 21, 2020 12:40 AM"
+      assert sunrise |> tz_full_format_string("Europe/Stockholm") == "June 21, 2020 12:54 AM"
+      assert dhuhr |> tz_full_format_string("Europe/Stockholm") == "June 21, 2020 12:55 PM"
+      assert asr |> tz_full_format_string("Europe/Stockholm") == "June 21, 2020 5:49 PM"
+      assert maghrib |> tz_full_format_string("Europe/Stockholm") == "June 21, 2020 11:36 PM"
+      assert isha |> tz_full_format_string("Europe/Stockholm") == "June 21, 2020 11:51 PM"
+    end
   end
 
   def tz_12_format_string(%DateTime{} = time, timezone) do
     time |> Timex.to_datetime(timezone) |> Timex.format!("{h12}:{m} {AM}")
+  end
+
+  def tz_full_format_string(%DateTime{} = time, timezone) do
+    time |> Timex.to_datetime(timezone) |> Timex.format!("{Mfull} {D}, {YYYY} {h12}:{m} {AM}")
   end
 end

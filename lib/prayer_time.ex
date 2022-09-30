@@ -35,7 +35,7 @@ defmodule PrayerTime do
          {:ok, dhuhr_time} <- DhuhrTime.find(transit, date, calculation_parameter, coordinate),
          {:ok, asr_time} <- AsrTime.find(solar_time, date, calculation_parameter),
          {:ok, tomorrow_sunrise} <-
-           SunriseTime.find(tomorrow_solar_time.sunrise, tomorrow, coordinate),
+           SunriseTime.find_naive_time(tomorrow_solar_time.sunrise, tomorrow),
          {:ok, sunset_time} <- SunsetTime.find(sunset, date, calculation_parameter, coordinate),
          {:ok, night} <- calculate_night(tomorrow_sunrise, sunset_time),
          {:ok, isha_time} <-
@@ -84,12 +84,12 @@ defmodule PrayerTime do
     isha_epoch = isha |> Timex.to_unix()
 
     case time |> Timex.to_unix() do
-      x when x >= fajr_epoch -> :fajr
       x when x >= isha_epoch -> :isha
       x when x >= maghrib_epoch -> :maghrib
       x when x >= asr_epoch -> :asr
       x when x >= dhuhr_epoch -> :dhuhr
       x when x >= sunrise_epoch -> :sunrise
+      x when x >= fajr_epoch -> :fajr
       _ -> :none
     end
   end
@@ -113,13 +113,13 @@ defmodule PrayerTime do
     isha_epoch = isha |> Timex.to_unix()
 
     case time |> Timex.to_unix() do
-      x when x >= fajr_epoch -> :sunrise
-      x when x >= isha_epoch -> :fajr
+      x when x >= isha_epoch -> :none
       x when x >= maghrib_epoch -> :isha
       x when x >= asr_epoch -> :maghrib
       x when x >= dhuhr_epoch -> :asr
       x when x >= sunrise_epoch -> :dhuhr
-      _ -> :none
+      x when x >= fajr_epoch -> :sunrise
+      _ -> :fajr
     end
   end
 

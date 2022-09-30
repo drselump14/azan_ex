@@ -81,6 +81,16 @@ defmodule SunriseTime do
     sunrise |> TimeComponent.new() |> TimeComponent.create_utc_datetime(date)
   end
 
+  def find_naive_time(sunrise, date) do
+    case find_naive_time!(sunrise, date) do
+      {:error, reason} ->
+        {:error, reason}
+
+      naive_time ->
+        {:ok, naive_time}
+    end
+  end
+
   def find_safe_time(polar_circle_resolution, date, coordinate) do
     %PolarCircleResolution{solar_time: %SolarTime{sunrise: new_sunrise}} =
       polar_circle_resolution
