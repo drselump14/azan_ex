@@ -25,10 +25,21 @@ defmodule PolarCircleResolution do
   def is_valid_solar_time(%SolarTime{}), do: false
 
   def aqrab_yaum_resolver(
-        %Coordinate{} = coordinate,
-        %Date{} = date,
+        coordinate,
+        date,
         days_added \\ 1,
         direction \\ 1
+      )
+
+  def aqrab_yaum_resolver(_coordinate, _date, days_added, _direction)
+      when days_added > ceil(365 / 2),
+      do: nil
+
+  def aqrab_yaum_resolver(
+        %Coordinate{} = coordinate,
+        %Date{} = date,
+        days_added,
+        direction
       ) do
     epoch_date = date |> Timex.shift(days: days_added * direction)
     tomorrow = epoch_date |> Timex.shift(days: 1)
@@ -52,10 +63,6 @@ defmodule PolarCircleResolution do
         aqrab_yaum_resolver(coordinate, date, days_added, -direction)
     end
   end
-
-  def aqrab_yaum_resolver(_coordinate, _date, days_added, _direction)
-      when days_added > ceil(365 / 2),
-      do: nil
 
   def aqrab_balad_resolver(%Coordinate{} = coordinate, %Date{} = date, latitude) do
     new_coordinate = %{coordinate | latitude: latitude}
