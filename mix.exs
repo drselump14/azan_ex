@@ -45,7 +45,7 @@ defmodule Azan.Azan.MixProject do
       {:ex_guard, path: "../../ex_guard", only: :dev},
       {:ex_machina, "~> 2.7.0"},
       {:ex_unit_notifier, "~> 1.2", only: :test},
-      {:faker, "~> 0.17", only: :test},
+      {:faker, "~> 0.17", only: [:dev, :test]},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:math, "~> 0.7.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
