@@ -27,7 +27,5 @@ jobs:
       run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/download/v0.6.28/earthly-linux-amd64 -O /usr/local/bin/earthly && chmod +x /usr/local/bin/earthly'"
     - name: Earthly version
       run: earthly --version
-    - name: Run linter
-      run: earthly --ci +linter
-    - name: Run test
-      run: earthly --ci +test
+    - name: Run linter and test
+      run: earthly --ci +linter-test

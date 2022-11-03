@@ -40,7 +40,7 @@ defmodule Azan.Azan.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:decimal, "~> 2.0"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.10", only: :test},
+      {:excoveralls, "~> 0.10", only: [:dev, :test]},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:ex_machina, "~> 2.7.0"},
       {:ex_unit_notifier, "~> 1.2", only: :test},

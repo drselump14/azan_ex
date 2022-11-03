@@ -18,14 +18,13 @@ setup-base:
 
   RUN mix compile --warnings-as-errors
 
-linter:
+linter-test:
   FROM +setup-base
 
   RUN mix format --check-formatted
   RUN mix credo --strict
   RUN mix dialyzer
 
-test:
-  FROM +setup-base
+  ENV MIX_ENV=test
   RUN mix test --trace
   RUN mix coveralls
