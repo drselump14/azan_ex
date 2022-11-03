@@ -30,6 +30,49 @@ defmodule Azan.PrayerTime do
     field :isha, DateTime.t()
   end
 
+  @doc """
+  Returns a `PrayerTime` struct for the given `date`, `coordinate` and `calculation_parameter`.
+
+      ## Examples
+
+      iex> date = ~D[2022-10-01]
+      ~D[2022-10-01]
+      iex> coordinate = %Azan.Coordinate{latitude: 35.671494, longitude: 139.90181}
+      %Azan.Coordinate{latitude: 35.671494, longitude: 139.90181}
+      iex> params = CalculationMethod.moonsighting_committee()
+      %Azan.CalculationParameter{
+        adjustments: %{asr: 0, dhuhr: 0, fajr: 0, isha: 0, maghrib: 0, sunrise: 0},
+        fajr_angle: 18,
+        high_latitude_rule: :middle_of_the_night,
+        isha_angle: 18,
+        isha_interval: 0,
+        madhab: :shafi,
+        maghrib_angle: 0,
+        method: :moonsighting_committee,
+        method_adjustments: %{
+          asr: 0,
+          dhuhr: 5,
+          fajr: 0,
+          isha: 0,
+          maghrib: 3,
+          sunrise: 0
+        },
+        polar_circle_resolution: :unresolved,
+        rounding: :nearest,
+        shafaq: :general
+      }
+      iex> coordinate |> PrayerTime.find(date, params)
+      %Azan.PrayerTime{
+        asr: ~U[2022-10-01 05:51:00Z],
+        dhuhr: ~U[2022-10-01 02:35:00Z],
+        fajr: ~U[2022-09-30 19:10:00Z],
+        isha: ~U[2022-10-01 09:43:00Z],
+        maghrib: ~U[2022-10-01 08:28:00Z],
+        sunrise: ~U[2022-09-30 20:35:00Z],
+        sunset: ~U[2022-10-01 08:25:00Z]
+      }
+
+  """
   def find(
         %Coordinate{latitude: latitude} = coordinate,
         date,
@@ -74,6 +117,23 @@ defmodule Azan.PrayerTime do
     end
   end
 
+  @doc """
+  Returns prayer time for prayer name
+
+      ## Examples
+
+      iex> prayer_time = %Azan.PrayerTime{
+      ...>               asr: ~U[2022-10-01 05:51:00Z],
+      ...>               dhuhr: ~U[2022-10-01 02:35:00Z],
+      ...>               fajr: ~U[2022-09-30 19:10:00Z],
+      ...>               isha: ~U[2022-10-01 09:43:00Z],
+      ...>               maghrib: ~U[2022-10-01 08:28:00Z],
+      ...>               sunrise: ~U[2022-09-30 20:35:00Z],
+      ...>               sunset: ~U[2022-10-01 08:25:00Z]
+      ...>             }
+      iex> prayer_time |> PrayerTime.time_for_prayer(:fajr)
+      ~U[2022-09-30 19:10:00Z]
+  """
   @spec time_for_prayer(PrayerTime.t(), atom()) :: DateTime.t()
   def time_for_prayer(%__MODULE__{} = prayer_time, prayer_name) do
     prayer_time

@@ -38,17 +38,17 @@ defmodule Azan.Azan.MixProject do
     [
       {:astro, "~> 0.9.2"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:decimal, "~> 2.0"},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:ex_guard, path: "../../ex_guard", only: :dev},
       {:ex_machina, "~> 2.7.0"},
       {:ex_unit_notifier, "~> 1.2", only: :test},
-      {:faker, "~> 0.17", only: :test},
+      {:faker, "~> 0.17", only: [:dev, :test]},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:math, "~> 0.7.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:oban, "~> 2.12.0"},
       {:timex, "~> 3.7"},
       {:typed_struct, "~> 0.3.0"}
     ]
