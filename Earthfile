@@ -21,9 +21,9 @@ setup-base:
 linter-test:
   FROM +setup-base
 
+  RUN mix dialyzer
   RUN mix format --check-formatted
   RUN mix credo --strict
-  RUN mix dialyzer
 
   ENV MIX_ENV=test
   RUN mix test --trace
