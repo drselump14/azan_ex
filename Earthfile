@@ -13,6 +13,7 @@ setup-mix:
 
 deps-get:
   FROM +setup-mix
+  ARG MIX_ENV=dev
   COPY mix.exs mix.lock ./
   COPY config config
   RUN mix do deps.get, deps.compile
@@ -23,40 +24,41 @@ deps-get:
   RUN mix dialyzer --plt
   SAVE ARTIFACT /src/deps
   SAVE ARTIFACT /src/_build
-  SAVE IMAGE --push ghcr.io/drselump14/azan_ex:deps-plts
+  SAVE IMAGE --push ghcr.io/drselump14/azan_ex:deps-plts-$MIX_ENV
 
-linter:
+compile:
   FROM +setup-mix
-  BUILD +deps-get
+  ARG MIX_ENV=dev
+  BUILD +deps-get --MIX_ENV=$MIX_ENV
   COPY +deps-get/deps /src/deps
   COPY +deps-get/_build /src/_build
 
   COPY . .
+  RUN mix compile --all-warnings --warnings-as-errors
+  SAVE ARTIFACT /src
+  SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile-$MIX_ENV
+
+linter:
+  FROM +setup-mix
+  BUILD +compile
+  COPY +compile/src /src
 
   RUN mix deps.audit
   RUN mix format --dry-run --check-formatted
   RUN mix credo --strict
   RUN mix compile --all-warnings --warnings-as-errors
+  RUN mix dialyzer --halt-exit-status
 
-  SAVE ARTIFACT /src
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:linter
   # TODO add Documentation
   # RUN mix doctor
 
-dialyzer:
-  FROM +setup-mix
-  BUILD +linter
-  COPY +linter/src /src
-
-  RUN mix dialyzer --halt-exit-status
-  SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile
-
 test:
   FROM +setup-mix
-  BUILD +linter
-  COPY +linter/src /src
+  BUILD +compile --MIX_ENV=test
+  COPY +compile/src /src
 
-  ENV MIX_ENV=test
-  RUN mix test --trace
+  RUN --mount=type=cache,target=/src/_build/test mix test --trace
   RUN mix coveralls
+  SAVE ARTIFACT /src
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile_test
