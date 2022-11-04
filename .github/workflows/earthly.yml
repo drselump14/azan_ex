@@ -21,7 +21,7 @@ jobs:
       with:
         registry: ghcr.io
         username: drselump14
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{github.token}}
 
     - name: Put back the git branch into git (Earthly uses it for tagging)
       run: |
