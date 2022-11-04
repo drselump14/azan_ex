@@ -40,6 +40,7 @@ defmodule Azan.Azan.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:decimal, "~> 2.0"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:doctor, "~> 0.19.0", only: :dev},
       {:excoveralls, "~> 0.10", only: [:dev, :test]},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:ex_machina, "~> 2.7.0"},
@@ -47,6 +48,7 @@ defmodule Azan.Azan.MixProject do
       {:faker, "~> 0.17", only: [:dev, :test]},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:math, "~> 0.7.0"},
+      {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:timex, "~> 3.7"},
       {:typed_struct, "~> 0.3.0"}
