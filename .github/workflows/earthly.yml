@@ -16,6 +16,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Log in to the Container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: drselump14
+        password: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Put back the git branch into git (Earthly uses it for tagging)
       run: |
         branch=""
