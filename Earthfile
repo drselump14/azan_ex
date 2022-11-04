@@ -57,7 +57,6 @@ test:
   COPY +linter/src /src
 
   ENV MIX_ENV=test
-  RUN mix compile --all-warnings --warning-as-errors
   RUN mix test --trace
   RUN mix coveralls
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile_test
