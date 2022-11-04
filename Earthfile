@@ -27,6 +27,7 @@ deps-get:
 
 linter:
   FROM +setup-mix
+  BUILD +deps-get
   COPY +deps-get/deps /src/deps
   COPY +deps-get/_build /src/_build
 
@@ -35,20 +36,25 @@ linter:
   RUN mix deps.audit
   RUN mix format --dry-run --check-formatted
   RUN mix credo --strict
+  RUN mix compile --all-warnings --warnings-as-errors
 
+  SAVE ARTIFACT /src
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:linter
   # TODO add Documentation
   # RUN mix doctor
 
 dialyzer:
-  FROM +linter
+  FROM +setup-mix
+  BUILD +linter
+  COPY +linter/src /src
 
-  RUN mix compile --all-warnings --warnings-as-errors
   RUN mix dialyzer --halt-exit-status
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile
 
 test:
-  FROM +linter
+  FROM +setup-mix
+  BUILD +linter
+  COPY +linter/src /src
 
   ENV MIX_ENV=test
   RUN mix compile --all-warnings --warning-as-errors
