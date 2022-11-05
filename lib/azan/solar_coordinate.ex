@@ -19,7 +19,7 @@ defmodule Azan.SolarCoordinate do
   def init_by_julian_day(julian_day) do
     t = julian_day |> Astronomical.julian_century()
     l_0 = t |> Astronomical.mean_solar_longitude()
-    l_p = t |> Astro.Lunar.mean_lunar_longitude()
+    l_p = t |> Astronomical.mean_lunar_longitude()
     omega = t |> Astronomical.ascending_lunar_node_longitude()
     lambda = t |> Astronomical.apparent_solar_longitude(l_0) |> Math.deg2rad()
     theta_0 = t |> Astronomical.mean_sidereal_time()

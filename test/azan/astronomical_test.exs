@@ -50,7 +50,7 @@ defmodule Azan.AstronomicalTest do
     omega = t |> Astronomical.ascending_lunar_node_longitude()
     e_0 = t |> Astronomical.mean_obliquity_of_the_ecliptic()
     l_0 = t |> Astronomical.mean_solar_longitude()
-    l_p = t |> Astro.Lunar.mean_lunar_longitude()
+    l_p = t |> Astronomical.mean_lunar_longitude()
     dpsi = l_0 |> Astronomical.nutation_in_longitude(l_p, omega)
     d_epsilon = l_0 |> Astronomical.nutation_in_obliquity(l_p, omega)
     e = e_0 + d_epsilon

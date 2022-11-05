@@ -1,6 +1,8 @@
+[![Coverage Status](https://coveralls.io/repos/github/drselump14/azan_ex/badge.svg?branch=feature/add_livebook_usage)](https://coveralls.io/github/drselump14/azan_ex?branch=feature/add_livebook_usage)
+
 # Azan
 
-**TODO: Add description**
+Calculate Azan for given time & location
 
 ## Installation
 
@@ -15,9 +17,7 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/azan_ex>.
+The docs be found at <https://hexdocs.pm/azan_ex>.
 
 ## Usage
 
@@ -37,4 +37,10 @@ be found at <https://hexdocs.pm/azan_ex>.
     sunrise: ~U[2022-09-30 20:35:00Z],
     sunset: ~U[2022-10-01 08:25:00Z]
   }
+```
+
+or try using livebook
+
+```bash
+livebook server USAGE.livemd
 ```

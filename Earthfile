@@ -1,6 +1,6 @@
 VERSION 0.6
 
-ARG ELIXIR=1.13.4
+ARG ELIXIR=1.14.1
 ARG OTP=25.1.2
 FROM hexpm/elixir:$ELIXIR-erlang-$OTP-alpine-3.16.2
 WORKDIR /src
@@ -50,8 +50,17 @@ test:
   COPY +deps-get/deps /src/deps
   COPY +deps-get/_build /src/_build
 
+  # Coveralls needs these environment variables to post coverage report
+  ARG GITHUB_SHA
+  ARG GITHUB_REF
+  ARG GITHUB_TOKEN
+  ARG GITHUB_EVENT_NAME
+
+  # Need to copy the event.json from github action host container to tmp/event.json
+  ARG GITHUB_EVENT_PATH=/src/tmp/event.json
+
   COPY . .
 
-  RUN mix coveralls
+  RUN mix coveralls.github
   SAVE ARTIFACT /src
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile_test
