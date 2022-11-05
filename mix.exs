@@ -20,8 +20,16 @@ defmodule Azan.Azan.MixProject do
         "coveralls.post": :test,
         "coveralls.html": :test
       ],
-      deps: deps()
+      deps: deps(),
+      package: package(),
+      name: "AzanEx",
+      description: description(),
+      source_url: "https://github.com/drselump14/azan_ex"
     ]
+  end
+
+  defp description do
+    "Calculating Azan times for a given location"
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
@@ -54,6 +62,17 @@ defmodule Azan.Azan.MixProject do
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:timex, "~> 3.7"},
       {:typed_struct, "~> 0.3.0"}
+    ]
+  end
+
+  defp package do
+    [
+      files: ~w(lib mix.exs README.md LICENSE.md),
+      maintainers: ["Slamet Kristanto"],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => "https://github.com/drselump14/azan_ex"
+      }
     ]
   end
 end
