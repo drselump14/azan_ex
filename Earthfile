@@ -16,6 +16,7 @@ deps-get:
   COPY mix.exs mix.lock ./
   COPY config config
   RUN mix do deps.get, deps.compile
+  RUN MIX_ENV=test mix deps.compile
 
   RUN mix hex.audit
   RUN mix deps.unlock --check-unused
@@ -37,26 +38,20 @@ linter:
   RUN mix format --dry-run --check-formatted
   RUN mix credo --strict
   RUN mix compile --all-warnings --warnings-as-errors
+  RUN mix dialyzer --halt-exit-status
 
-  SAVE ARTIFACT /src
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:linter
   # TODO add Documentation
   # RUN mix doctor
 
-dialyzer:
-  FROM +setup-mix
-  BUILD +linter
-  COPY +linter/src /src
-
-  RUN mix dialyzer --halt-exit-status
-  SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile
-
 test:
   FROM +setup-mix
-  BUILD +linter
-  COPY +linter/src /src
+  BUILD +deps-get
+  COPY +deps-get/deps /src/deps
+  COPY +deps-get/_build /src/_build
 
-  ENV MIX_ENV=test
-  RUN mix test --trace
+  COPY . .
+
   RUN mix coveralls
+  SAVE ARTIFACT /src
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile_test

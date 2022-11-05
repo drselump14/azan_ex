@@ -13,6 +13,8 @@ defmodule Azan.Azan.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.github": :test,
         "test.watch": :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
