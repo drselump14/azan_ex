@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/drselump14/azan_ex/badge.svg?branch=feature/add_livebook_usage)](https://coveralls.io/github/drselump14/azan_ex?branch=feature/add_livebook_usage)
+
 # Azan
 
 Calculate Azan for given time & location
