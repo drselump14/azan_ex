@@ -11,19 +11,6 @@ env:
   FORCE_COLOR: 1
 
 jobs:
-  linter:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Prepare Earthly
-      uses: ./.github/actions/setup_earthly
-      with:
-        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Run dialyzer
-      run: earthly --ci --push +linter
-
   test:
     runs-on: ubuntu-latest
     steps:
@@ -33,6 +20,9 @@ jobs:
       uses: ./.github/actions/setup_earthly
       with:
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Run Linter
+      run: earthly --ci --push +linter
 
     - name: Run test
       run: earthly --ci --push +test

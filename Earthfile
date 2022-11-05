@@ -13,10 +13,10 @@ setup-mix:
 
 deps-get:
   FROM +setup-mix
-  ARG MIX_ENV=dev
   COPY mix.exs mix.lock ./
   COPY config config
   RUN mix do deps.get, deps.compile
+  RUN MIX_ENV=test mix deps.compile
 
   RUN mix hex.audit
   RUN mix deps.unlock --check-unused
@@ -24,24 +24,15 @@ deps-get:
   RUN mix dialyzer --plt
   SAVE ARTIFACT /src/deps
   SAVE ARTIFACT /src/_build
-  SAVE IMAGE --push ghcr.io/drselump14/azan_ex:deps-plts-$MIX_ENV
+  SAVE IMAGE --push ghcr.io/drselump14/azan_ex:deps-plts
 
-compile:
+linter:
   FROM +setup-mix
-  ARG MIX_ENV=dev
-  BUILD +deps-get --MIX_ENV=$MIX_ENV
+  BUILD +deps-get
   COPY +deps-get/deps /src/deps
   COPY +deps-get/_build /src/_build
 
   COPY . .
-  RUN mix compile --all-warnings --warnings-as-errors
-  SAVE ARTIFACT /src
-  SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile-$MIX_ENV
-
-linter:
-  FROM +setup-mix
-  BUILD +compile
-  COPY +compile/src /src
 
   RUN mix deps.audit
   RUN mix format --dry-run --check-formatted
@@ -55,10 +46,12 @@ linter:
 
 test:
   FROM +setup-mix
-  BUILD +compile --MIX_ENV=test
-  COPY +compile/src /src
+  BUILD +deps-get
+  COPY +deps-get/deps /src/deps
+  COPY +deps-get/_build /src/_build
 
-  RUN --mount=type=cache,target=/src/_build/test mix test --trace
+  COPY . .
+
   RUN mix coveralls
   SAVE ARTIFACT /src
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:compile_test
