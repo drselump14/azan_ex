@@ -1,6 +1,6 @@
 VERSION 0.6
 
-ARG ELIXIR=1.13.4
+ARG ELIXIR=1.14.1
 ARG OTP=25.1.2
 FROM hexpm/elixir:$ELIXIR-erlang-$OTP-alpine-3.16.2
 WORKDIR /src
