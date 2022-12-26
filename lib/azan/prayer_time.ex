@@ -20,6 +20,8 @@ defmodule Azan.PrayerTime do
 
   use TypedStruct
 
+  require Logger
+
   typedstruct do
     field :fajr, DateTime.t()
     field :sunrise, DateTime.t()
@@ -208,6 +210,12 @@ defmodule Azan.PrayerTime do
   def calculate_night(_tomorrow_sunrise, {:error, _}), do: {:error, :invalid}
 
   def calculate_night(tomorrow_sunrise, sunset_time) do
-    {:ok, Timex.to_unix(tomorrow_sunrise) - Timex.to_unix(sunset_time)}
+    with {:ok, tomorrow_sunrice_epoch} <-
+           tomorrow_sunrise |> Timex.to_unix() |> DateUtils.wrap_timex_error(),
+         {:ok, sunset_epoch} <- sunset_time |> Timex.to_unix() |> DateUtils.wrap_timex_error() do
+      {:ok, tomorrow_sunrice_epoch - sunset_epoch}
+    else
+      error -> error
+    end
   end
 end

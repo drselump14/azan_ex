@@ -8,6 +8,7 @@ defmodule Azan.PolarCircleResolution do
 
   alias Azan.{
     Coordinate,
+    DateUtils,
     MathUtils,
     SolarTime
   }
@@ -47,26 +48,30 @@ defmodule Azan.PolarCircleResolution do
         days_added,
         direction
       ) do
-    epoch_date = date |> Timex.shift(days: days_added * direction)
-    tomorrow = epoch_date |> Timex.shift(days: 1)
-    solar_time = SolarTime.new(epoch_date, coordinate)
-    tomorrow_solar_time = SolarTime.new(tomorrow, coordinate)
+    with {:ok, epoch_date} <-
+           date |> Timex.shift(days: days_added * direction) |> DateUtils.wrap_timex_error(),
+         {:ok, tomorrow} <- epoch_date |> Timex.shift(days: 1) |> DateUtils.wrap_timex_error() do
+      solar_time = SolarTime.new(epoch_date, coordinate)
+      tomorrow_solar_time = SolarTime.new(tomorrow, coordinate)
 
-    case is_valid_solar_time(solar_time) && is_valid_solar_time(tomorrow_solar_time) do
-      true ->
-        %__MODULE__{
-          date: date,
-          tomorrow: tomorrow,
-          coordinate: coordinate,
-          solar_time: solar_time,
-          tomorrow_solar_time: tomorrow_solar_time
-        }
+      case is_valid_solar_time(solar_time) && is_valid_solar_time(tomorrow_solar_time) do
+        true ->
+          %__MODULE__{
+            date: date,
+            tomorrow: tomorrow,
+            coordinate: coordinate,
+            solar_time: solar_time,
+            tomorrow_solar_time: tomorrow_solar_time
+          }
 
-      _ ->
-        days_offset = if direction > 0, do: 0, else: 1
-        days_added = days_added + days_offset
+        _ ->
+          days_offset = if direction > 0, do: 0, else: 1
+          days_added = days_added + days_offset
 
-        aqrab_yaum_resolver(coordinate, date, days_added, -direction)
+          aqrab_yaum_resolver(coordinate, date, days_added, -direction)
+      end
+    else
+      {:error, reason} -> raise reason
     end
   end
 

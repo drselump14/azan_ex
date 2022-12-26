@@ -39,6 +39,7 @@ linter:
   RUN mix credo --strict
   RUN mix compile --all-warnings --warnings-as-errors
   RUN mix dialyzer --halt-exit-status
+  RUN mix gradient
 
   SAVE IMAGE --push ghcr.io/drselump14/azan_ex:linter
   # TODO add Documentation

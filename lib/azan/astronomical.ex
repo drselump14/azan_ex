@@ -173,7 +173,7 @@ defmodule Azan.Astronomical do
     if year |> Timex.is_leap?(), do: 173, else: 172
   end
 
-  @spec days_since_solstice(integer(), integer(), float()) :: pos_integer()
+  @spec days_since_solstice(pos_integer(), pos_integer(), float()) :: integer()
   def days_since_solstice(day_of_year, year, latitude) when latitude >= 0 do
     days_since_solstice = day_of_year + @northern_offset
     days_in_year = year |> DateUtils.days_in_year()

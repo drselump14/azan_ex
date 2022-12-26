@@ -3,10 +3,15 @@ defmodule Azan.DateUtils do
   A collection of date utilities.
   """
 
+  require Logger
+
   def day_of_year(%Date{} = date) do
-    date
-    |> Timex.diff(date |> Timex.beginning_of_year(), :days)
-    |> Kernel.+(1)
+    with {:ok, beginning_of_year} <- date |> Timex.beginning_of_year() |> wrap_timex_error(),
+         {:ok, diff} <- date |> Timex.diff(beginning_of_year, :days) |> wrap_timex_error() do
+      diff |> Kernel.+(1)
+    else
+      {:error, reason} -> raise reason
+    end
   end
 
   def day_of_year(year, month, day) do
@@ -45,5 +50,15 @@ defmodule Azan.DateUtils do
     prayer_time
     |> Timex.shift(minutes: adjustment)
     |> __MODULE__.rounded_minute(rounding)
+  end
+
+  def wrap_timex_error(result) do
+    case result do
+      {:error, reason} ->
+        {:error, reason}
+
+      value ->
+        {:ok, value}
+    end
   end
 end
