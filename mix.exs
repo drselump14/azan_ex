@@ -55,6 +55,7 @@ defmodule Azan.Azan.MixProject do
       {:ex_machina, "~> 2.7.0"},
       {:ex_unit_notifier, "~> 1.2", only: :test},
       {:faker, "~> 0.17", only: [:dev, :test]},
+      {:gradient, github: "esl/gradient", only: [:dev], runtime: false},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:math, "~> 0.7.0"},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
