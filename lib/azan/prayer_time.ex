@@ -44,12 +44,12 @@ defmodule Azan.PrayerTime do
       iex> params = CalculationMethod.moonsighting_committee()
       %Azan.CalculationParameter{
         adjustments: %{asr: 0, dhuhr: 0, fajr: 0, isha: 0, maghrib: 0, sunrise: 0},
-        fajr_angle: 18,
+        fajr_angle: 18.0,
         high_latitude_rule: :middle_of_the_night,
-        isha_angle: 18,
+        isha_angle: 18.0,
         isha_interval: 0,
         madhab: :shafi,
-        maghrib_angle: 0,
+        maghrib_angle: 0.0,
         method: :moonsighting_committee,
         method_adjustments: %{
           asr: 0,
