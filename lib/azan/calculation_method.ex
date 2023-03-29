@@ -8,8 +8,8 @@ defmodule Azan.CalculationMethod do
   def muslim_world_league do
     %CalculationParameter{
       method: :muslim_world_league,
-      fajr_angle: 18,
-      isha_angle: 17
+      fajr_angle: 18.0,
+      isha_angle: 17.0
     }
     |> CalculationParameter.adjust_by_method(:dhuhr, 1)
   end
@@ -26,8 +26,8 @@ defmodule Azan.CalculationMethod do
   def karachi do
     %CalculationParameter{
       method: :karachi,
-      fajr_angle: 18,
-      isha_angle: 18
+      fajr_angle: 18.0,
+      isha_angle: 18.0
     }
     |> CalculationParameter.adjust_by_method(:dhuhr, 1)
   end
@@ -56,8 +56,8 @@ defmodule Azan.CalculationMethod do
   def moonsighting_committee do
     params = %CalculationParameter{
       method: :moonsighting_committee,
-      fajr_angle: 18,
-      isha_angle: 18
+      fajr_angle: 18.0,
+      isha_angle: 18.0
     }
 
     params
@@ -77,7 +77,7 @@ defmodule Azan.CalculationMethod do
   def kuwait do
     %CalculationParameter{
       method: :kuwait,
-      fajr_angle: 18,
+      fajr_angle: 18.0,
       isha_angle: 17.5
     }
   end
@@ -85,7 +85,7 @@ defmodule Azan.CalculationMethod do
   def qatar do
     %CalculationParameter{
       method: :qatar,
-      fajr_angle: 18,
+      fajr_angle: 18.0,
       isha_angle: 0,
       isha_interval: 90
     }
@@ -94,8 +94,8 @@ defmodule Azan.CalculationMethod do
   def singapore do
     %CalculationParameter{
       method: :singapore,
-      fajr_angle: 20,
-      isha_angle: 18,
+      fajr_angle: 20.0,
+      isha_angle: 18.0,
       rounding: :up
     }
     |> CalculationParameter.adjust_by_method(:dhuhr, 1)
@@ -105,7 +105,7 @@ defmodule Azan.CalculationMethod do
     %CalculationParameter{
       method: :tehran,
       fajr_angle: 17.7,
-      isha_angle: 14,
+      isha_angle: 14.0,
       isha_interval: 4
     }
   end
@@ -113,8 +113,8 @@ defmodule Azan.CalculationMethod do
   def turkey do
     %CalculationParameter{
       method: :turkey,
-      fajr_angle: 18,
-      isha_angle: 17
+      fajr_angle: 18.0,
+      isha_angle: 17.0
     }
     |> CalculationParameter.adjust_by_method(:sunrise, -7)
     |> CalculationParameter.adjust_by_method(:dhuhr, 5)

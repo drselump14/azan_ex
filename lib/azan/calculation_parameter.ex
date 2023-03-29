@@ -3,13 +3,14 @@ defmodule Azan.CalculationParameter do
   Documentation for `CalculationParameter`.
   """
   use TypedStruct
+  use Domo
 
   typedstruct do
     field :method, atom(), default: :other
-    field :fajr_angle, float(), default: 0
-    field :isha_angle, float(), default: 0
+    field :fajr_angle, float(), default: 0.0
+    field :isha_angle, float(), default: 0.0
     field :isha_interval, integer(), default: 0
-    field :maghrib_angle, float(), default: 0
+    field :maghrib_angle, float(), default: 0.0
 
     field :method_adjustments, map(),
       default: %{fajr: 0, sunrise: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0}

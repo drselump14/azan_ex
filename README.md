@@ -23,7 +23,7 @@ The docs be found at <https://hexdocs.pm/azan_ex>.
 
 ```elixir
   date = DateTime.utc_now() |> DateTime.to_date()
-  coordinate = %Azan.Coordinate{latitude: 35.671494 , longitude: 139.901810}
+  {:ok, coordinate } = Azan.Coordinate.new(latitude: 35.671494 , longitude: 139.901810)
   params = Azan.CalculationMethod.moonsighting_committee()
 
   prayer_time = coordinate |> Azan.PrayerTime.find(date, params)

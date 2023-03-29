@@ -14,7 +14,7 @@ defmodule Azan.PrayerTimeTest do
 
   describe "find/3" do
     setup do
-      coordinate = %Coordinate{latitude: 35.775, longitude: -78.6336}
+      coordinate = Coordinate.new!(latitude: 35.775, longitude: -78.6336)
 
       %{
         coordinate: coordinate
@@ -179,7 +179,7 @@ defmodule Azan.PrayerTimeTest do
     end
 
     test "singapore method" do
-      coordinate = Coordinate.new(3.7333333333, 101.3833333333)
+      coordinate = Coordinate.new!(latitude: 3.7333333333, longitude: 101.3833333333)
       date = Date.new!(2015, 6, 14)
 
       params = CalculationMethod.singapore()
@@ -202,7 +202,7 @@ defmodule Azan.PrayerTimeTest do
     end
 
     test "getting the time for a given prayer" do
-      coordinate = Coordinate.new(59.9094, 10.7349)
+      coordinate = Coordinate.new!(latitude: 59.9094, longitude: 10.7349)
       date = Date.new!(2016, 7, 1)
 
       params = %{
@@ -230,7 +230,7 @@ defmodule Azan.PrayerTimeTest do
     end
 
     test "getting the current prayer" do
-      coordinate = Coordinate.new(33.720817, 73.090032)
+      coordinate = Coordinate.new!(latitude: 33.720817, longitude: 73.090032)
       date = Date.new!(2015, 9, 1)
 
       params = %{
@@ -266,7 +266,7 @@ defmodule Azan.PrayerTimeTest do
     end
 
     test "changing the time for asr with different madhabs" do
-      coordinate = Coordinate.new(35.775, -78.6336)
+      coordinate = Coordinate.new!(latitude: 35.775, longitude: -78.6336)
       date = Date.new!(2015, 12, 1)
 
       params = CalculationMethod.muslim_world_league()
@@ -281,7 +281,7 @@ defmodule Azan.PrayerTimeTest do
     end
 
     test "getting the next prayer" do
-      coordinate = Coordinate.new(33.720817, 73.090032)
+      coordinate = Coordinate.new!(latitude: 33.720817, longitude: 73.090032)
       date = Date.new!(2015, 9, 1)
 
       params = %{CalculationMethod.karachi() | madhab: :hanafi}
@@ -307,7 +307,7 @@ defmodule Azan.PrayerTimeTest do
     end
 
     test "adjusting prayer time with high latitude rule" do
-      coordinate = Coordinate.new(55.983226, -3.216649)
+      coordinate = Coordinate.new!(latitude: 55.983226, longitude: -3.216649)
       date = Date.new!(2020, 6, 15)
       tzid = "Europe/London"
       params = CalculationMethod.muslim_world_league()
@@ -368,7 +368,7 @@ defmodule Azan.PrayerTimeTest do
 
   describe "Moonsighting Committee method with shafaq general" do
     setup do
-      coordinate = Coordinate.new(43.494, -79.844)
+      coordinate = Coordinate.new!(latitude: 43.494, longitude: -79.844)
       params = %{CalculationMethod.moonsighting_committee() | shafaq: :general, madhab: :hanafi}
 
       %{
@@ -464,7 +464,7 @@ defmodule Azan.PrayerTimeTest do
 
   describe "Moonsighting Committee method with shafaq ahmer" do
     setup do
-      coordinate = Coordinate.new(43.494, -79.844)
+      coordinate = Coordinate.new!(latitude: 43.494, longitude: -79.844)
       params = %{CalculationMethod.moonsighting_committee() | shafaq: :ahmer}
 
       %{
@@ -560,7 +560,7 @@ defmodule Azan.PrayerTimeTest do
 
   describe "Moonsighting Committee method with shafaq abyad" do
     setup do
-      coordinate = Coordinate.new(43.494, -79.844)
+      coordinate = Coordinate.new!(latitude: 43.494, longitude: -79.844)
       params = %{CalculationMethod.moonsighting_committee() | shafaq: :abyad, madhab: :hanafi}
 
       %{
@@ -661,9 +661,9 @@ defmodule Azan.PrayerTimeTest do
           Timex.to_datetime({{2020, 6, 21}, {20, 0, 0}}, "Etc/UTC") |> Timex.to_date(),
         date_affected_by_polar_night:
           Timex.to_datetime({{2020, 12, 21}, {20, 0, 0}}, "Etc/UTC") |> Timex.to_date(),
-        regular_coordinates: Coordinate.new(31.947351, 35.227163),
-        arjeplog_sweden: Coordinate.new(66.7222444, 17.7189),
-        amundsen_scott_antarctic: Coordinate.new(-84.996, 0.01013),
+        regular_coordinates: Coordinate.new!(latitude: 31.947351, longitude: 35.227163),
+        arjeplog_sweden: Coordinate.new!(latitude: 66.7222444, longitude: 17.7189),
+        amundsen_scott_antarctic: Coordinate.new!(latitude: -84.996, longitude: 0.01013),
         unresolved_params: CalculationMethod.muslim_world_league(),
         aqrab_balad_params: %{
           CalculationMethod.muslim_world_league()
@@ -789,7 +789,7 @@ defmodule Azan.PrayerTimeTest do
     end
 
     test "Polar night calculating times for the polar circle" do
-      coordinate = Coordinate.new(66.7222444, 17.7189)
+      coordinate = Coordinate.new!(latitude: 66.7222444, longitude: 17.7189)
       date = Date.new!(2020, 6, 21)
 
       params = %{
