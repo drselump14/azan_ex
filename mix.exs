@@ -7,7 +7,7 @@ defmodule Azan.Azan.MixProject do
   def project do
     [
       app: :azan_ex,
-      version: "0.2.0",
+      version: "0.3.0",
       elixir: "~> 1.13",
       compilers: [:domo_compiler] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
