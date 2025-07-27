@@ -12,8 +12,8 @@ defmodule Azan.CalculationMethodTest do
 
   test "muslim_world_league" do
     assert CalculationMethod.muslim_world_league() == %CalculationParameter{
-             fajr_angle: 18,
-             isha_angle: 17,
+             fajr_angle: 18.0,
+             isha_angle: 17.0,
              method: :muslim_world_league,
              method_adjustments: %{asr: 0, dhuhr: 1, fajr: 0, isha: 0, maghrib: 0, sunrise: 0}
            }
@@ -31,8 +31,8 @@ defmodule Azan.CalculationMethodTest do
 
   test "karachi" do
     assert CalculationMethod.karachi() == %CalculationParameter{
-             fajr_angle: 18,
-             isha_angle: 18,
+             fajr_angle: 18.0,
+             isha_angle: 18.0,
              method: :karachi,
              method_adjustments: %{asr: 0, dhuhr: 1, fajr: 0, isha: 0, maghrib: 0, sunrise: 0}
            }
@@ -58,8 +58,8 @@ defmodule Azan.CalculationMethodTest do
 
   test "moonsighting_committee" do
     assert CalculationMethod.moonsighting_committee() == %CalculationParameter{
-             fajr_angle: 18,
-             isha_angle: 18,
+             fajr_angle: 18.0,
+             isha_angle: 18.0,
              method: :moonsighting_committee,
              method_adjustments: %{asr: 0, dhuhr: 5, fajr: 0, isha: 0, maghrib: 3, sunrise: 0}
            }
@@ -67,8 +67,8 @@ defmodule Azan.CalculationMethodTest do
 
   test "north_america" do
     assert CalculationMethod.north_america() == %CalculationParameter{
-             fajr_angle: 15,
-             isha_angle: 15,
+             fajr_angle: 15.0,
+             isha_angle: 15.0,
              method: :north_america,
              method_adjustments: %{asr: 0, dhuhr: 1, fajr: 0, isha: 0, maghrib: 0, sunrise: 0}
            }
@@ -76,7 +76,7 @@ defmodule Azan.CalculationMethodTest do
 
   test "kuwait" do
     assert CalculationMethod.kuwait() == %CalculationParameter{
-             fajr_angle: 18,
+             fajr_angle: 18.0,
              isha_angle: 17.5,
              method: :kuwait,
              method_adjustments: %{asr: 0, dhuhr: 0, fajr: 0, isha: 0, maghrib: 0, sunrise: 0}
@@ -85,7 +85,7 @@ defmodule Azan.CalculationMethodTest do
 
   test "qatar" do
     assert CalculationMethod.qatar() == %CalculationParameter{
-             fajr_angle: 18,
+             fajr_angle: 18.0,
              isha_angle: 0,
              isha_interval: 90,
              method: :qatar,
@@ -95,8 +95,8 @@ defmodule Azan.CalculationMethodTest do
 
   test "singapore" do
     assert CalculationMethod.singapore() == %CalculationParameter{
-             fajr_angle: 20,
-             isha_angle: 18,
+             fajr_angle: 20.0,
+             isha_angle: 18.0,
              method: :singapore,
              rounding: :up,
              method_adjustments: %{asr: 0, dhuhr: 1, fajr: 0, isha: 0, maghrib: 0, sunrise: 0}
@@ -106,7 +106,7 @@ defmodule Azan.CalculationMethodTest do
   test "tehran" do
     assert CalculationMethod.tehran() == %CalculationParameter{
              fajr_angle: 17.7,
-             isha_angle: 14,
+             isha_angle: 14.0,
              isha_interval: 4,
              method: :tehran,
              method_adjustments: %{asr: 0, dhuhr: 0, fajr: 0, isha: 0, maghrib: 0, sunrise: 0}
@@ -115,8 +115,8 @@ defmodule Azan.CalculationMethodTest do
 
   test "turkey" do
     assert CalculationMethod.turkey() == %CalculationParameter{
-             fajr_angle: 18,
-             isha_angle: 17,
+             fajr_angle: 18.0,
+             isha_angle: 17.0,
              method: :turkey,
              method_adjustments: %{asr: 4, dhuhr: 5, fajr: 0, isha: 0, maghrib: 7, sunrise: -7}
            }

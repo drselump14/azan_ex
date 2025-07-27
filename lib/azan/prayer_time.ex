@@ -65,13 +65,13 @@ defmodule Azan.PrayerTime do
       }
       iex> coordinate |> PrayerTime.find(date, params)
       %Azan.PrayerTime{
-        asr: ~U[2022-10-01 05:51:00Z],
-        dhuhr: ~U[2022-10-01 02:35:00Z],
+        asr: ~U[2022-10-01 05:51:00.000000Z],
+        dhuhr: ~U[2022-10-01 02:35:00.000000Z],
         fajr: ~U[2022-09-30 19:10:00Z],
-        isha: ~U[2022-10-01 09:43:00Z],
-        maghrib: ~U[2022-10-01 08:28:00Z],
-        sunrise: ~U[2022-09-30 20:35:00Z],
-        sunset: ~U[2022-10-01 08:25:00Z]
+        isha: ~U[2022-10-01 09:43:00.000000Z],
+        maghrib: ~U[2022-10-01 08:28:00.000000Z],
+        sunrise: ~U[2022-09-30 20:35:00.000000Z],
+        sunset: ~U[2022-10-01 08:25:00.000000Z]
       }
 
   """

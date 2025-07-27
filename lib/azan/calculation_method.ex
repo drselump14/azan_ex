@@ -101,6 +101,7 @@ defmodule Azan.CalculationMethod do
     |> CalculationParameter.adjust_by_method(:dhuhr, 1)
   end
 
+  @spec tehran() :: CalculationParameter.t()
   def tehran do
     %CalculationParameter{
       method: :tehran,

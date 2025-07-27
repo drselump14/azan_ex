@@ -25,11 +25,11 @@ defmodule Azan.PolarCircleResolution do
     field :tomorrow_solar_time, SolarTime.t()
   end
 
-  def is_valid_solar_time(%SolarTime{sunrise: sunrise, sunset: sunset})
+  def valid_solar_time?(%SolarTime{sunrise: sunrise, sunset: sunset})
       when is_number(sunrise) and is_number(sunset),
       do: true
 
-  def is_valid_solar_time(%SolarTime{}), do: false
+  def valid_solar_time?(%SolarTime{}), do: false
 
   def aqrab_yaum_resolver(
         coordinate,
@@ -54,7 +54,7 @@ defmodule Azan.PolarCircleResolution do
       solar_time = SolarTime.new(epoch_date, coordinate)
       tomorrow_solar_time = SolarTime.new(tomorrow, coordinate)
 
-      case is_valid_solar_time(solar_time) && is_valid_solar_time(tomorrow_solar_time) do
+      case valid_solar_time?(solar_time) && valid_solar_time?(tomorrow_solar_time) do
         true ->
           %__MODULE__{
             date: date,
@@ -81,7 +81,7 @@ defmodule Azan.PolarCircleResolution do
     tomorrow = date |> Timex.shift(days: 1)
     tomorrow_solar_time = tomorrow |> SolarTime.new(new_coordinate)
 
-    case is_valid_solar_time(solar_time) && is_valid_solar_time(tomorrow_solar_time) do
+    case valid_solar_time?(solar_time) && valid_solar_time?(tomorrow_solar_time) do
       true ->
         %__MODULE__{
           date: date,
